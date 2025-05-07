@@ -1,8 +1,7 @@
 {
-  "name": "bolsa-empleo",
+  "name": "frontend",
   "integrations": {
     "capacitor": {}
   },
-  "type": "angular",
-  "framework": "@angular/core"
-} 
+  "type": "angular-standalone"
+}

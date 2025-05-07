@@ -2,10 +2,10 @@
   "name": "bolsa-empleo-backend",
   "version": "1.0.0",
   "description": "Backend para el sistema de bolsa de empleo",
-  "main": "src/index.js",
+  "main": "src/server/index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js",
+    "start": "node src/server/index.js",
+    "dev": "nodemon src/server/index.js",
     "test": "jest"
   },
   "dependencies": {

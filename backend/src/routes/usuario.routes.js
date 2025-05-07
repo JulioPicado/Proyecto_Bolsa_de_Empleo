@@ -34,4 +34,34 @@ router.post('/', async (req, res) => {
   }
 });
 
+// Obtener todos los usuarios
+router.get('/', async (req, res) => {
+  try {
+    const usuarios = await usuarioController.obtenerTodos();
+    res.json(usuarios);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Actualizar usuario
+router.put('/:id', async (req, res) => {
+  try {
+    const usuario = await usuarioController.actualizarUsuario(req.params.id, req.body);
+    res.json(usuario);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Eliminar usuario
+router.delete('/:id', async (req, res) => {
+  try {
+    await usuarioController.eliminarUsuario(req.params.id);
+    res.json({ message: 'Usuario eliminado' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router; 
