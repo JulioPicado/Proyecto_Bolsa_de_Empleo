@@ -38,7 +38,9 @@ ion-list {
 }
 
 ion-item {
-  --background: #f0f0f0;
+
+  --background: #fff;
+
   --color: #222831;
   border-radius: 8px;
   margin-bottom: 12px;
@@ -52,9 +54,12 @@ ion-label {
 
 ion-input {
   color: #222831;
-  background: transparent !important;
+
+  --background: #f0f0f0;
+  background: #f0f0f0 !important;
   border-radius: 6px;
-  border: none;
+  border: 1px solid #ccc;
+
 }
 
 .login-btn {
