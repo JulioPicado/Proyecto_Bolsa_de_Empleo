@@ -4,10 +4,11 @@ const postulanteController = require('../controllers/postulanteController');
 describe('Controlador de Postulante', () => {
   test('Debe crear y buscar un postulante por id', async () => {
     // Arrange
+    const timestamp = Date.now();
     const usuarioData = {
       nombre: 'Postulante',
       apellido: 'Test',
-      correo: 'postulante.test@email.com',
+      correo: `postulante.test.${timestamp}@email.com`,
       contraseña: 'testpass',
       tipo_usuario: 'postulante'
     };
