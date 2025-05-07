@@ -1,0 +1,355 @@
+<ion-header [translucent]="true" class="main-navbar">
+  <ion-toolbar color="light" class="navbar" style="--background: #f5f7fa;">
+    <div class="navbar-content">
+      <div class="navbar-logo">
+        <img src="/assets/img/juzama3.png" alt="Logo JUZAMA" class="logo-navbar" />
+        <span class="system-name">JUZAMA - Bolsa de Empleo</span>
+      </div>
+      <nav class="navbar-menu">
+        <a *ngIf="tipoUsuario === 'administrador'" routerLink="/usuarios" routerLinkActive="active">Usuarios</a>
+        <a *ngIf="tipoUsuario === 'administrador' || tipoUsuario === 'empresa'" routerLink="/register" routerLinkActive="active">Registrar</a>
+        <a *ngIf="tipoUsuario === 'empresa'" routerLink="/ofertas" routerLinkActive="active">Ofertas</a>
+        <a *ngIf="tipoUsuario === 'postulante'" routerLink="/postulaciones" routerLinkActive="active">Mis Postulaciones</a>
+        <a routerLink="/perfil" routerLinkActive="active">Mi Perfil</a>
+      </nav>
+      <div class="navbar-user">
+        <span class="user-type">{{ tipoUsuario | titlecase }}</span>
+        <span class="user-name">{{ nombreUsuario }}</span>
+        <a class="logout" routerLink="/login">Cerrar Sesión</a>
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="menu-content">
+  <div class="menu-central-container">
+    <h1 class="saludo">¡Bienvenido{{ nombreUsuario ? ', ' + nombreUsuario : '' }}!</h1>
+    <div class="menu-cards">
+      <!-- Postulante -->
+      <ng-container *ngIf="tipoUsuario === 'postulante'">
+        <div class="menu-card" routerLink="/ofertas">
+          <h2>Buscar Ofertas</h2>
+          <p>Explora y postúlate a nuevas oportunidades laborales.</p>
+        </div>
+        <div class="menu-card" routerLink="/postulaciones">
+          <h2>Mis Postulaciones</h2>
+          <p>Consulta el estado de tus postulaciones.</p>
+        </div>
+        <div class="menu-card" routerLink="/perfil">
+          <h2>Editar Perfil</h2>
+          <p>Actualiza tu información personal y profesional.</p>
+        </div>
+      </ng-container>
+      <!-- Empresa -->
+      <ng-container *ngIf="tipoUsuario === 'empresa'">
+        <div class="menu-card" routerLink="/ofertas">
+          <h2>Publicar Oferta</h2>
+          <p>Crea nuevas vacantes para tu empresa.</p>
+        </div>
+        <div class="menu-card" routerLink="/ofertas">
+          <h2>Mis Ofertas</h2>
+          <p>Gestiona las ofertas publicadas por tu empresa.</p>
+        </div>
+        <div class="menu-card" routerLink="/postulantes">
+          <h2>Ver Postulantes</h2>
+          <p>Revisa los candidatos que han aplicado a tus ofertas.</p>
+        </div>
+        <div class="menu-card" routerLink="/perfil">
+          <h2>Editar Perfil</h2>
+          <p>Actualiza la información de tu empresa.</p>
+        </div>
+      </ng-container>
+      <!-- Administrador -->
+      <ng-container *ngIf="tipoUsuario === 'administrador'">
+        <div class="menu-card" routerLink="/usuarios">
+          <h2>Ver Usuarios</h2>
+          <p>Consulta y gestiona todos los usuarios del sistema.</p>
+        </div>
+        <div class="menu-card" routerLink="/empresas">
+          <h2>Gestionar Empresas</h2>
+          <p>Administra la información de las empresas registradas.</p>
+        </div>
+        <div class="menu-card" routerLink="/ofertas">
+          <h2>Gestionar Ofertas</h2>
+          <p>Supervisa y edita las ofertas laborales del sistema.</p>
+        </div>
+        <div class="menu-card" routerLink="/estadisticas">
+          <h2>Estadísticas</h2>
+          <p>Visualiza datos y reportes del sistema.</p>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+  <footer class="main-footer">
+    <div class="footer-content">
+      <span>© {{ currentYear }} JUZAMA - Bolsa de Empleo. Todos los derechos reservados.</span>
+      <span class="footer-contact">Contacto: soporte&#64;juzama.com</span>
+      <span class="footer-version">Versión 1.0</span>
+      <span class="footer-user">Usuario: {{ nombreUsuario }} ({{ tipoUsuario | titlecase }})</span>
+    </div>
+  </footer>
+</ion-content>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
+  body, .menu-content {
+    font-family: 'Montserrat', Arial, sans-serif;
+    --background: #f5f7fa;
+    background: #f5f7fa !important;
+  }
+  .main-navbar {
+    --background: #f5f7fa;
+    box-shadow: 0 2px 8px rgba(0,174,239,0.10);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .navbar {
+    --background: #f5f7fa;
+    min-height: 64px;
+    display: flex;
+    align-items: center;
+    padding: 0 32px;
+  }
+  .navbar-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+  .navbar-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .logo-navbar {
+    height: 38px;
+    width: auto;
+    margin-right: 0;
+  }
+  .system-name {
+    color: #00AEEF;
+    font-weight: 700;
+    font-size: 1.2em;
+    letter-spacing: 1px;
+    margin-left: 4px;
+  }
+  .navbar-menu {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    flex: 1;
+    justify-content: center;
+  }
+  .navbar-menu a {
+    color: #222831;
+    font-weight: 600;
+    font-size: 1.1em;
+    text-decoration: none;
+    padding: 8px 0;
+    border-bottom: 2px solid transparent;
+    transition: border 0.2s, color 0.2s;
+  }
+  .navbar-menu a.active, .navbar-menu a:hover {
+    color: #00AEEF;
+    border-bottom: 2px solid #00AEEF;
+  }
+  .navbar-user {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .user-type {
+    color: #00AEEF;
+    font-weight: 700;
+    font-size: 1.1em;
+    letter-spacing: 1px;
+    margin-right: 6px;
+  }
+  .user-name {
+    color: #00b6e6;
+    font-weight: 600;
+    font-size: 1.05em;
+    margin-right: 8px;
+  }
+  .logout {
+    padding: 6px 18px;
+    font-size: 1em;
+    margin-left: 0;
+    margin-right: 0;
+    display: block !important;
+    border-radius: 8px;
+    background: #00AEEF !important;
+    color: #fff !important;
+    box-shadow: none !important;
+    border: none !important;
+    outline: none !important;
+  }
+  .logout:focus, .logout:active {
+    box-shadow: none !important;
+    border: none !important;
+    outline: none !important;
+    background: #0096c7 !important;
+  }
+  .menu-content {
+    --background: #f5f7fa;
+    min-height: 100vh;
+  }
+  .menu-central-container {
+    max-width: 1100px;
+    margin: 48px auto 0 auto;
+    padding: 0 24px;
+    text-align: center;
+  }
+  .saludo {
+    color: #00AEEF;
+    font-size: 2.2em;
+    font-weight: 700;
+    margin-bottom: 32px;
+  }
+  .menu-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    justify-content: center;
+  }
+  .menu-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 16px rgba(0,174,239,0.10);
+    padding: 32px 24px;
+    width: 260px;
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: box-shadow 0.2s, transform 0.2s;
+    border: 2px solid transparent;
+  }
+  .menu-card:hover {
+    box-shadow: 0 4px 24px rgba(0,174,239,0.18);
+    border: 2px solid #00AEEF;
+    transform: translateY(-4px) scale(1.03);
+  }
+  .menu-card h2 {
+    color: #00AEEF;
+    font-size: 1.3em;
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+  .menu-card p {
+    color: #222831;
+    font-size: 1em;
+    margin: 0;
+  }
+  .main-footer {
+    width: 100%;
+    background: #f3f6fa;
+    color: #00AEEF;
+    font-size: 1em;
+    font-weight: 600;
+    padding: 18px 0 10px 0;
+    text-align: center;
+    border-top: 1px solid #e6f7fb;
+    margin-top: 48px;
+    position: relative;
+    bottom: 0;
+    left: 0;
+  }
+  .footer-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .footer-contact {
+    color: #222831;
+    font-size: 0.95em;
+    font-weight: 400;
+  }
+  .footer-version {
+    color: #888;
+    font-size: 0.9em;
+    font-weight: 400;
+  }
+  .footer-user {
+    color: #222831;
+    font-size: 0.9em;
+    font-weight: 400;
+  }
+  @media (max-width: 900px) {
+    .menu-cards {
+      gap: 20px;
+    }
+    .menu-card {
+      width: 90%;
+      min-width: 220px;
+      max-width: 400px;
+    }
+  }
+  @media (max-width: 800px) {
+    .navbar-content {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      padding: 0 12px;
+    }
+    .navbar-content > *:not(.navbar-logo):not(.navbar-user) {
+      display: none !important;
+    }
+    .system-name, .user-name, .user-type, .navbar-menu {
+      display: none !important;
+    }
+    .navbar {
+      padding: 0;
+      min-height: 40px;
+    }
+    .navbar-logo {
+      margin: 0;
+      display: flex;
+      align-items: center;
+    }
+    .logo-navbar {
+      height: 26px;
+      margin: 0;
+      display: block;
+    }
+    .navbar-user {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+    }
+    .logout {
+      padding: 6px 18px;
+      font-size: 1em;
+      margin-left: 0;
+      margin-right: 0;
+      display: block !important;
+      border-radius: 8px;
+      background: #00AEEF !important;
+      color: #fff !important;
+      box-shadow: none !important;
+      border: none !important;
+      outline: none !important;
+    }
+    .logout:focus, .logout:active {
+      box-shadow: none !important;
+      border: none !important;
+      outline: none !important;
+      background: #0096c7 !important;
+    }
+  }
+  @media (max-width: 700px) {
+    .menu-central-container {
+      padding: 0 4px;
+    }
+    .main-footer {
+      font-size: 0.95em;
+      padding: 12px 0 8px 0;
+    }
+  }
+</style> 

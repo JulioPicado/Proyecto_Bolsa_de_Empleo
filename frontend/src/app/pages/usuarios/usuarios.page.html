@@ -1,0 +1,315 @@
+<ion-header [translucent]="true" class="main-navbar">
+  <ion-toolbar color="light" class="navbar">
+    <div class="navbar-content">
+      <div class="navbar-logo-small">
+        <img src="/assets/img/juzama3.png" alt="Logo JUZAMA" class="logo-navbar-small" />
+      </div>
+      <ion-button class="btn-menu" (click)="irAlMenuPrincipal()">Menú Principal</ion-button>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="usuarios-content">
+  <div class="usuarios-main-layout">
+    <div class="usuarios-central-container">
+      <h2 class="usuarios-title">Usuarios Registrados</h2>
+      <div class="usuarios-table-wrapper">
+        <!-- Eliminar la tabla, dejar solo las tarjetas -->
+        <!-- Tarjetas responsivas para todas las resoluciones -->
+        <div class="usuarios-cards-grid" *ngIf="usuarios && usuarios.length > 0">
+          <div class="usuario-card-grid" *ngFor="let usuario of usuarios">
+            <div><b>ID:</b> {{ usuario.id_usuario }}</div>
+            <div><b>Nombre:</b> {{ usuario.nombre }}</div>
+            <div><b>Apellido:</b> {{ usuario.apellido }}</div>
+            <div><b>Correo:</b> {{ usuario.correo }}</div>
+            <div><b>Tipo:</b> {{ usuario.tipo_usuario | titlecase }}</div>
+            <div><b>Fecha Registro:</b> {{ usuario.fecha_registro | date:'short' }}</div>
+            <div class="usuario-card-actions">
+              <button class="btn-action edit" (click)="abrirEditar(usuario)">Editar</button>
+              <button class="btn-action delete" (click)="abrirEliminar(usuario)">Eliminar</button>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="usuarios && usuarios.length === 0" class="usuarios-empty">
+          No hay usuarios registrados.
+        </div>
+        <div *ngIf="error" class="error-msg">
+          {{ error }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Editar Usuario -->
+  <div class="modal-bg" *ngIf="usuarioEditar">
+    <div class="modal">
+      <h2>Editar Usuario</h2>
+      <form (ngSubmit)="guardarEdicion()">
+        <label>Nombre
+          <input [(ngModel)]="usuarioEditar.nombre" name="nombre" required />
+        </label>
+        <label>Apellido
+          <input [(ngModel)]="usuarioEditar.apellido" name="apellido" required />
+        </label>
+        <label>Correo
+          <input [(ngModel)]="usuarioEditar.correo" name="correo" required type="email" />
+        </label>
+        <label>Tipo de usuario
+          <select [(ngModel)]="usuarioEditar.tipo_usuario" name="tipo_usuario" required>
+            <option value="administrador">Administrador</option>
+            <option value="empresa">Empresa</option>
+            <option value="postulante">Postulante</option>
+          </select>
+        </label>
+        <div class="modal-actions">
+          <button type="submit" class="btn-action edit">Guardar</button>
+          <button type="button" class="btn-action" (click)="cerrarModal()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Confirmar Eliminación -->
+  <div class="modal-bg" *ngIf="usuarioEliminar">
+    <div class="modal">
+      <h2>¿Eliminar usuario?</h2>
+      <p>¿Estás seguro de que deseas eliminar a <b>{{ usuarioEliminar.nombre }} {{ usuarioEliminar.apellido }}</b>?</p>
+      <div class="modal-actions">
+        <button class="btn-action delete" (click)="confirmarEliminar()">Eliminar</button>
+        <button class="btn-action" (click)="cerrarModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</ion-content>
+
+<style>
+  body, .usuarios-content {
+    --background: #f5f7fa;
+    background: #f5f7fa !important;
+  }
+  .main-navbar {
+    --background: #fff;
+    box-shadow: 0 2px 8px rgba(0,174,239,0.10);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .navbar-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 16px;
+  }
+  .navbar-logo-small {
+    display: flex;
+    align-items: center;
+  }
+  .logo-navbar-small {
+    height: 38px;
+    width: auto;
+    margin-right: 8px;
+  }
+  .navbar-title {
+    color: #00AEEF;
+    font-size: 1.3em;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+  .btn-menu {
+    background: #00AEEF;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 7px 18px;
+    font-weight: 600;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-menu:hover {
+    background: #0096c7;
+  }
+  .usuarios-main-layout {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    margin: 32px 0 0 0;
+  }
+  .usuarios-central-container {
+    flex: 1;
+    max-width: 100vw;
+    padding: 0;
+    text-align: center;
+  }
+  .usuarios-title {
+    color: #00AEEF;
+    font-size: 1.4em;
+    font-weight: 700;
+    margin-bottom: 18px;
+    letter-spacing: 1px;
+  }
+  .usuarios-table-wrapper {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 16px rgba(0,174,239,0.10);
+    padding: 24px 8px;
+    overflow-x: auto;
+  }
+  .usuarios-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1em;
+    background: #fff;
+  }
+  .usuarios-table th, .usuarios-table td {
+    padding: 10px 6px;
+    border-bottom: 1px solid #e6f7fb;
+    text-align: left;
+    color: #00AEEF;
+  }
+  .usuarios-table th {
+    background: #e6f7fb;
+    color: #00AEEF;
+    font-weight: 700;
+    font-size: 1.05em;
+  }
+  .usuarios-table td {
+    color: #222831;
+    font-weight: 500;
+  }
+  .usuarios-table tr:hover {
+    background: #f0fbff;
+  }
+  .usuarios-empty {
+    color: #888;
+    margin-top: 24px;
+    font-size: 1.1em;
+  }
+  .btn-action {
+    background: #e6f7fb;
+    color: #00AEEF;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-weight: 600;
+    margin: 0 2px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+  .btn-action.edit {
+    background: #00AEEF;
+    color: #fff;
+  }
+  .btn-action.delete {
+    background: #e74c3c;
+    color: #fff;
+  }
+  .btn-action:hover {
+    filter: brightness(0.95);
+  }
+  .modal-bg {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+  }
+  .modal {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 16px rgba(0,174,239,0.18);
+    padding: 32px 24px;
+    min-width: 320px;
+    max-width: 95vw;
+    text-align: left;
+  }
+  .modal h2 {
+    color: #00AEEF;
+    margin-bottom: 18px;
+  }
+  .modal label {
+    display: block;
+    margin-bottom: 12px;
+    color: #222831;
+    font-weight: 600;
+  }
+  .modal input, .modal select {
+    width: 100%;
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid #e6f7fb;
+    margin-top: 4px;
+    margin-bottom: 8px;
+    font-size: 1em;
+  }
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .usuarios-cards-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 32px 40px;
+    margin: 0 auto;
+    padding: 0 8px;
+    max-width: 1400px;
+  }
+  .usuario-card-grid {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,174,239,0.10);
+    padding: 16px 18px;
+    font-size: 1em;
+    color: #222831;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-align: left;
+    min-width: 320px;
+    max-width: 420px;
+    margin: 0;
+    align-items: flex-start;
+  }
+  .usuario-card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    justify-content: flex-start;
+  }
+  @media (max-width: 900px) {
+    .usuarios-cards-grid {
+      gap: 18px 0;
+      padding: 0 2px;
+    }
+    .usuario-card-grid {
+      min-width: 90%;
+      max-width: 98%;
+      padding: 12px 6px;
+      margin: 0 auto;
+    }
+  }
+  @media (max-width: 600px) {
+    .navbar-content {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .usuarios-title {
+      font-size: 1em;
+      margin-bottom: 10px;
+    }
+    .usuarios-table th, .usuarios-table td {
+      padding: 6px 2px;
+      font-size: 0.95em;
+    }
+    .usuarios-table-wrapper {
+      padding: 8px 0;
+    }
+  }
+</style> 

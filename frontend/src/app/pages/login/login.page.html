@@ -1,0 +1,91 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Iniciar Sesión</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="login-content">
+  <div class="login-modal animate">
+    <h2 class="form-title">Iniciar Sesión en JUZAMA</h2>
+    <div class="imgcontainer">
+     
+    </div>
+    <form (ngSubmit)="onSubmit(loginForm)" #loginForm="ngForm">
+      <ion-list lines="none">
+        <ion-item>
+          <ion-label position="floating"><b>Correo</b></ion-label>
+          <ion-input type="email" required [(ngModel)]="correo" name="correo"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating"><b>Contraseña</b></ion-label>
+          <ion-input type="password" required [(ngModel)]="contrasena" name="contrasena"></ion-input>
+        </ion-item>
+      </ion-list>
+      <ion-button expand="block" type="submit" class="login-btn">Iniciar Sesión</ion-button>
+      <ion-item lines="none">
+        <ion-label>
+          <ion-checkbox slot="start" checked></ion-checkbox>
+          Recordarme
+        </ion-label>
+        <ion-note slot="end" color="primary">
+          <a href="/register">Registrar nuevo usuario</a>
+        </ion-note>
+      </ion-item>
+    </form>
+  </div>
+</ion-content>
+
+<footer class="main-footer">
+  <div class="footer-content">
+    <span>© {{ currentYear }} JUZAMA - Bolsa de Empleo. Todos los derechos reservados.</span>
+    <span class="footer-contact">Contacto: soporte&#64;juzama.com</span>
+    <span class="footer-version">Versión 1.0</span>
+  </div>
+</footer>
+
+<style>
+  .form-title {
+    text-align: center;
+    color: #00AEEF;
+    font-size: 1.3em;
+    font-weight: 700;
+    margin-bottom: 18px;
+    letter-spacing: 1px;
+  }
+  .main-footer {
+    width: 100%;
+    background: #f3f6fa;
+    color: #00AEEF;
+    font-size: 1em;
+    font-weight: 600;
+    padding: 18px 0 10px 0;
+    text-align: center;
+    border-top: 1px solid #e6f7fb;
+    margin-top: 32px;
+    position: relative;
+    bottom: 0;
+    left: 0;
+  }
+  .footer-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .footer-contact {
+    color: #222831;
+    font-size: 0.95em;
+    font-weight: 400;
+  }
+  .footer-version {
+    color: #888;
+    font-size: 0.9em;
+    font-weight: 400;
+  }
+  @media (max-width: 600px) {
+    .main-footer {
+      font-size: 0.95em;
+      padding: 12px 0 8px 0;
+    }
+  }
+</style> 
