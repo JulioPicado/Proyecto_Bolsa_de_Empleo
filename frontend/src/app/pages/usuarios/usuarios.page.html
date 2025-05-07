@@ -1,0 +1,44 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Lista de Usuarios</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="usuarios-content">
+  <div class="usuarios-modal animate">
+    <ion-button expand="block" (click)="cargarUsuarios()">Cargar usuarios</ion-button>
+    <ion-list *ngIf="usuarios && usuarios.length">
+      <ion-item *ngFor="let usuario of usuarios">
+        <ion-label>
+          <b>{{ usuario.nombre }} {{ usuario.apellido }}</b><br>
+          <span>{{ usuario.correo }}</span><br>
+          <span>Tipo: {{ usuario.tipo_usuario }}</span>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+    <div *ngIf="usuarios && usuarios.length === 0">
+      No hay usuarios registrados.
+    </div>
+    <div *ngIf="error" class="error-msg">
+      {{ error }}
+    </div>
+  </div>
+</ion-content>
+
+<style>
+  .usuarios-modal {
+    background: #fff;
+    margin: 5% auto 15% auto;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 16px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+    padding: 32px 24px 24px 24px;
+    animation: animatezoom 0.6s;
+  }
+  .error-msg {
+    color: #e74c3c;
+    font-size: 0.95em;
+    margin: 12px 0 0 8px;
+  }
+</style> 

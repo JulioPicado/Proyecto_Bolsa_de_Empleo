@@ -34,4 +34,14 @@ router.post('/', async (req, res) => {
   }
 });
 
+// Obtener todos los usuarios
+router.get('/', async (req, res) => {
+  try {
+    const usuarios = await usuarioController.obtenerTodos();
+    res.json(usuarios);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router; 

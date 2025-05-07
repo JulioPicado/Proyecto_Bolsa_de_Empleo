@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const db = require('./config/database');
+const db = require('../config/database');
 
 // Configuración de variables de entorno
 dotenv.config();

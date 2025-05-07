@@ -26,8 +26,14 @@ async function buscarPorId(id_usuario) {
   return result.rows[0] ? new Usuario(result.rows[0]) : null;
 }
 
+async function obtenerTodos() {
+  const result = await db.query('SELECT * FROM usuario');
+  return result.rows.map(row => new Usuario(row));
+}
+
 module.exports = {
   crearUsuario,
   buscarPorCorreo,
-  buscarPorId
+  buscarPorId,
+  obtenerTodos
 }; 
