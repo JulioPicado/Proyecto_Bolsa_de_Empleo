@@ -1,4 +1,4 @@
-const postulacionController = require('../../controllers/postulacionController');
+const postulacionController = require('../controllers/postulacionController');
 
 describe('Controlador de Postulacion', () => {
   test('Debe crear y buscar una postulacion por id', async () => {

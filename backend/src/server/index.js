@@ -18,23 +18,23 @@ app.get('/', (req, res) => {
 });
 
 // Rutas de autenticación
-app.use('/api/auth', require('./routes/auth'));
+app.use('/api/auth', require('../routes/auth.routes'));
 
 // Rutas de vacantes
-app.use('/api/vacantes', require('./routes/vacantes'));
+app.use('/api/vacantes', require('../routes/vacantes.routes'));
 
 // Rutas de postulaciones
-app.use('/api/postulaciones', require('./routes/postulaciones'));
+app.use('/api/postulaciones', require('../routes/postulaciones.routes'));
 
 // Rutas de perfiles
-app.use('/api/perfiles', require('./routes/perfiles'));
+app.use('/api/perfiles', require('../routes/perfiles.routes'));
 
 // Rutas de usuarios
-app.use('/api/usuarios', require('./routes/usuario'));
-app.use('/api/postulantes', require('./routes/postulante'));
-app.use('/api/empresas', require('./routes/empresa'));
-app.use('/api/ofertas', require('./routes/ofertas'));
-app.use('/api/administradores', require('./routes/administrador'));
+app.use('/api/usuarios', require('../routes/usuario.routes'));
+app.use('/api/postulantes', require('../routes/postulante.routes'));
+app.use('/api/empresas', require('../routes/empresa.routes'));
+app.use('/api/ofertas', require('../routes/ofertas.routes'));
+app.use('/api/administradores', require('../routes/administrador.routes'));
 
 // Ruta de prueba de conexión
 app.get('/api/test-db', async (req, res) => {

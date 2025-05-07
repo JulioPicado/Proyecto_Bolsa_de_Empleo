@@ -1,10 +1,19 @@
-const empresaController = require('../../controllers/empresaController');
+const usuarioController = require('../controllers/usuarioController');
+const empresaController = require('../controllers/empresaController');
 
 describe('Controlador de Empresa', () => {
   test('Debe crear y buscar una empresa por id', async () => {
     // Arrange
+    const usuarioData = {
+      nombre: 'Empresa',
+      apellido: 'Test',
+      correo: 'empresa.test@email.com',
+      contraseña: 'testpass',
+      tipo_usuario: 'empresa'
+    };
+    const usuario = await usuarioController.crearUsuario(usuarioData);
     const data = {
-      id_empresa: 9998, // Usa un id poco probable para evitar conflictos
+      id_empresa: usuario.id_usuario,
       nombre_empresa: 'Empresa Prueba',
       sector: 'Servicios',
       descripcion: 'Empresa de prueba para test',

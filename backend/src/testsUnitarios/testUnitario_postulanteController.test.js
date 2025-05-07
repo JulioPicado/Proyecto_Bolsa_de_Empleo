@@ -1,10 +1,19 @@
-const postulanteController = require('../../controllers/postulanteController');
+const usuarioController = require('../controllers/usuarioController');
+const postulanteController = require('../controllers/postulanteController');
 
 describe('Controlador de Postulante', () => {
   test('Debe crear y buscar un postulante por id', async () => {
     // Arrange
+    const usuarioData = {
+      nombre: 'Postulante',
+      apellido: 'Test',
+      correo: 'postulante.test@email.com',
+      contraseña: 'testpass',
+      tipo_usuario: 'postulante'
+    };
+    const usuario = await usuarioController.crearUsuario(usuarioData);
     const data = {
-      id_postulante: 9999, // Usa un id poco probable para evitar conflictos
+      id_postulante: usuario.id_usuario,
       curriculum: 'CV de Prueba',
       experiencia_laboral: 'Sin experiencia',
       educacion: 'Secundaria',

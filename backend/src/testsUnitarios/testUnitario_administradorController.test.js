@@ -1,4 +1,4 @@
-const administradorController = require('../../controllers/administradorController');
+const administradorController = require('../controllers/administradorController');
 
 describe('Controlador de Administrador', () => {
   test('Debe crear y buscar un administrador por id', async () => {
