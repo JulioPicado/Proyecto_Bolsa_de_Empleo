@@ -1,0 +1,99 @@
+INSTALAR E IMPLEMENTAR BASE DE DATOS - SISTEMA BOLSA DE EMPLEO
+==============================================================
+
+1. INSTALACIÓN DE POSTGRESQL
+----------------------------
+- Descargar el instalador desde: https://www.postgresql.org/download/windows/
+- Ejecutar el instalador y dejar seleccionados los siguientes componentes:
+  - PostgreSQL Server
+  - pgAdmin 4
+  - Stack Builder
+  - Command Line Tools
+- Elegir una contraseña para el usuario 'postgres' y recordar el puerto (por defecto: 5432).
+- Dejar la configuración regional por defecto.
+- Finalizar la instalación (no es necesario ejecutar Stack Builder al final).
+
+2. CREAR LA BASE DE DATOS
+-------------------------
+- Abrir pgAdmin 4 desde el menú de inicio.
+- Conectarse al servidor usando la contraseña definida.
+- Hacer clic derecho sobre "Databases" y seleccionar "Create > Database...".
+- Ingresar el nombre: bolsa_empleo
+- Guardar.
+
+3. CREAR LAS TABLAS DEL PROYECTO
+--------------------------------
+- Hacer clic derecho sobre la base de datos "bolsa_empleo" y seleccionar "Query Tool".
+- Copiar y pegar el siguiente script SQL y ejecutarlo:
+
+--- INICIO DEL SCRIPT SQL ---
+
+-- Tabla Usuario
+CREATE TABLE usuario (
+    id_usuario SERIAL PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL,
+    apellido VARCHAR(50) NOT NULL,
+    correo VARCHAR(100) UNIQUE NOT NULL,
+    contraseña VARCHAR(255) NOT NULL,
+    tipo_usuario VARCHAR(20) NOT NULL, -- 'postulante', 'empresa', 'administrador'
+    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabla Postulante
+CREATE TABLE postulante (
+    id_postulante INTEGER PRIMARY KEY REFERENCES usuario(id_usuario),
+    curriculum TEXT,
+    experiencia_laboral TEXT,
+    educacion TEXT,
+    habilidades TEXT,
+    telefono VARCHAR(20),
+    direccion VARCHAR(100)
+);
+
+-- Tabla Empresa
+CREATE TABLE empresa (
+    id_empresa INTEGER PRIMARY KEY REFERENCES usuario(id_usuario),
+    nombre_empresa VARCHAR(100) NOT NULL,
+    sector VARCHAR(50),
+    descripcion TEXT,
+    sitio_web VARCHAR(100),
+    telefono_contacto VARCHAR(20),
+    direccion VARCHAR(100)
+);
+
+-- Tabla Oferta
+CREATE TABLE oferta (
+    id_oferta SERIAL PRIMARY KEY,
+    id_empresa INTEGER REFERENCES empresa(id_empresa),
+    titulo VARCHAR(100) NOT NULL,
+    descripcion TEXT,
+    requisitos TEXT,
+    ubicacion VARCHAR(100),
+    tipo_contrato VARCHAR(50),
+    fecha_publicacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    estado VARCHAR(20) DEFAULT 'activa'
+);
+
+-- Tabla Postulacion
+CREATE TABLE postulacion (
+    id_postulacion SERIAL PRIMARY KEY,
+    id_oferta INTEGER REFERENCES oferta(id_oferta),
+    id_postulante INTEGER REFERENCES postulante(id_postulante),
+    fecha_postulacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    estado VARCHAR(20) DEFAULT 'enviada', -- 'enviada', 'aceptada', 'rechazada'
+    mensaje TEXT
+);
+
+-- Tabla Administrador
+CREATE TABLE administrador (
+    id_administrador INTEGER PRIMARY KEY REFERENCES usuario(id_usuario),
+    rol VARCHAR(50)
+);
+
+--- FIN DEL SCRIPT SQL ---
+
+4. VERIFICAR TABLAS
+-------------------
+- En el panel izquierdo, expande la base de datos "bolsa_empleo" > Schemas > public > Tables para ver las tablas creadas.
+
+¡Listo! La base de datos y las tablas están listas para usarse en el proyecto. 

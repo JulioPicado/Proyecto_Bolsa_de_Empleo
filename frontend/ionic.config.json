@@ -1,0 +1,8 @@
+{
+  "name": "bolsa-empleo",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular",
+  "framework": "@angular/core"
+} 
