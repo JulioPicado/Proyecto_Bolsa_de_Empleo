@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'usuarios',
+    'ofertas',
+    'postulaciones',
     'corsheaders'
 ]
 REST_FRAMEWORK = {
