@@ -11,34 +11,44 @@ import { RouterModule } from '@angular/router';
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, RouterModule]
+  imports: [IonicModule, CommonModule, FormsModule, RouterModule],
 })
 export class LoginPage implements OnInit {
   correo: string = '';
   contrasena: string = '';
   currentYear: number = new Date().getFullYear();
 
-  constructor(private auth: AuthService, private toastCtrl: ToastController, private router: Router) {}
+  constructor(
+    private auth: AuthService,
+    private toastCtrl: ToastController,
+    private router: Router
+  ) {}
 
   async mostrarToast(mensaje: string, color: string = 'danger') {
     const toast = await this.toastCtrl.create({
       message: mensaje,
       duration: 3500,
-      color
+      color,
     });
     toast.present();
   }
 
   onSubmit(form: any) {
     if (form.invalid) return;
-    this.auth.login({ correo: this.correo, contraseña: this.contrasena }).subscribe({
+    this.auth.login({ correo: this.correo, clave: this.contrasena }).subscribe({
       next: (res) => {
         this.mostrarToast('¡Bienvenido!', 'success');
         // Guardar usuario en localStorage para el menú
-        localStorage.setItem('usuario', JSON.stringify(res.usuario));
+        localStorage.setItem(
+          'usuario',
+          JSON.stringify({
+            id: res.id,
+            roles: res.roles,
+          })
+        );
         this.router.navigate(['/menu']);
       },
-      error: err => {
+      error: (err) => {
         if (err.error && err.error.error) {
           this.mostrarToast('Error: ' + err.error.error);
         } else if (err.message) {
@@ -46,7 +56,7 @@ export class LoginPage implements OnInit {
         } else {
           this.mostrarToast('Error desconocido al iniciar sesión.');
         }
-      }
+      },
     });
   }
 

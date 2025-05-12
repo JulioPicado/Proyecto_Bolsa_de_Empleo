@@ -8,10 +8,9 @@ import { RouterModule } from '@angular/router';
   templateUrl: './menu.page.html',
   styleUrls: ['./menu.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, RouterModule]
+  imports: [IonicModule, CommonModule, RouterModule],
 })
 export class MenuPage implements OnInit {
-  // Simulación: en el futuro esto vendrá del login/token
   tipoUsuario: 'postulante' | 'empresa' | 'administrador' = 'postulante';
   nombreUsuario: string = '';
   tipoUsuarioDebug: string = '';
@@ -19,24 +18,53 @@ export class MenuPage implements OnInit {
   currentYear: number = new Date().getFullYear();
 
   ngOnInit() {
-    // Obtener datos del usuario desde localStorage (simulación)
+    // Obtener datos del usuario desde localStorage
     const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
-    if (usuario && usuario.tipo_usuario) {
-      this.tipoUsuarioDebug = usuario.tipo_usuario;
-      const tipo = (usuario.tipo_usuario + '').toLowerCase().trim();
-      if (tipo === 'administrador' || tipo === 'empresa' || tipo === 'postulante') {
-        this.tipoUsuario = tipo as any;
+
+    // Verificar si el usuario tiene roles
+    if (usuario && usuario.roles && usuario.roles.length > 0) {
+      // Tomar el primer rol como el tipo de usuario principal
+      const primerRol = usuario.roles[0].toLowerCase();
+      this.tipoUsuarioDebug = primerRol;
+
+      if (
+        primerRol === 'administrador' ||
+        primerRol === 'empresa' ||
+        primerRol === 'postulante'
+      ) {
+        this.tipoUsuario = primerRol as any;
         this.tipoValido = true;
       } else {
         this.tipoValido = false;
       }
-      this.nombreUsuario = (usuario.nombre ? usuario.nombre : '') + (usuario.apellido ? ' ' + usuario.apellido : '');
+
+      // Si guardamos nombre y apellido también, los usamos
+      if (usuario.nombre && usuario.apellido) {
+        this.nombreUsuario = `${usuario.nombre} ${usuario.apellido}`;
+      } else {
+        // Si solo guardamos id y roles, podríamos cargar el nombre desde una API
+        this.nombreUsuario = `Usuario #${usuario.id}`;
+
+        // Opcional: cargar más datos del usuario desde la API
+        // this.usuarioService.obtenerDetallesUsuario(usuario.id).subscribe(detalles => {
+        //   this.nombreUsuario = `${detalles.nombre} ${detalles.apellido}`;
+        // });
+      }
     } else {
       this.tipoValido = false;
     }
-    // Debug: mostrar en consola el tipo de usuario leído
-    console.log('Tipo usuario leído:', this.tipoUsuarioDebug, '| Detectado:', this.tipoUsuario);
+
+    console.log(
+      'Rol usuario leído:',
+      this.tipoUsuarioDebug,
+      '| Detectado:',
+      this.tipoUsuario
+    );
   }
 
-  // Puedes cambiar el valor arriba para ver cómo se adapta el menú
-} 
+  // Función para determinar si el usuario tiene un rol específico
+  tieneRol(rol: string): boolean {
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    return usuario && usuario.roles && usuario.roles.includes(rol);
+  }
+}
