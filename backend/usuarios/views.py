@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from .models import Usuario, Rol, Postulante, Empresa
-    from django.contrib.auth.hashers import check_password, make_password
+from django.contrib.auth.hashers import check_password, make_password
 from rest_framework_simplejwt.tokens import RefreshToken
 
 @api_view(['POST'])
