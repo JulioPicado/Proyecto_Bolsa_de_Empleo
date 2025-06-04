@@ -23,6 +23,20 @@ log.txt
 /platforms
 /plugins
 
+# Android specific
+/android
+/android/*
+.gradle
+gradle/
+gradlew
+gradlew.bat
+local.properties
+*.apk
+*.aab
+*.aar
+*.ap_
+*.dex
+
 # Compiled output
 /dist
 /tmp

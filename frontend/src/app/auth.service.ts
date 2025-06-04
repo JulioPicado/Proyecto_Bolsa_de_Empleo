@@ -5,7 +5,7 @@ import { catchError } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private apiUrl = 'http://localhost:8000'; // Cambia esto si tu backend usa otro puerto o ruta
+  private apiUrl = 'https://juzamabackend.ticocr.org'; // Cambia esto si tu backend usa otro puerto o ruta
 
   constructor(private http: HttpClient) {}
 

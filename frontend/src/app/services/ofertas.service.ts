@@ -28,7 +28,7 @@ export interface Oferta {
   providedIn: 'root'
 })
 export class OfertasService {
-  private apiUrl = 'http://localhost:8000';
+  private apiUrl = 'https://juzamabackend.ticocr.org';
 
   constructor(private http: HttpClient) { }
 

@@ -26,7 +26,10 @@ SECRET_KEY = 'django-insecure-=y^@f7^bu@htde5@(j3%p%#805w909&^4d(#ij5a53aalo6doh
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "juzamabackend.ticocr.org",
+    "localhost"
+]
 
 
 # Application definition
@@ -124,6 +127,8 @@ DATABASES = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8100",  # Tu frontend en Ionic/Angular
     "http://127.0.0.1:8100",
+    "https://juzama.ticocr.org",
+    
     
 ]
 

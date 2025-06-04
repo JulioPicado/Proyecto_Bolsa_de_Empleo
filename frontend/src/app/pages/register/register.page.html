@@ -183,7 +183,7 @@
                 <ion-item>
                   <ion-label position="floating"><b>Teléfono</b></ion-label>
                   <ion-input
-                    type="text"
+                    type="tel"
                     required
                     pattern="^[0-9]{7,15}$"
                     name="telefono"
@@ -205,13 +205,12 @@
 
                 <ion-item>
                   <ion-label position="floating"><b>Dirección</b></ion-label>
-                  <ion-input
-                    type="text"
+                  <ion-textarea
                     required
                     name="direccion"
                     [(ngModel)]="direccion"
                     #direccionCtrl="ngModel"
-                  ></ion-input>
+                  ></ion-textarea>
                 </ion-item>
                 <div
                   *ngIf="direccionCtrl.invalid && direccionCtrl.touched"
@@ -227,13 +226,12 @@
                   <ion-label position="floating"
                     ><b>Nombre de la empresa</b></ion-label
                   >
-                  <ion-input
-                    type="text"
+                  <ion-textarea
                     required
                     name="nombreEmpresa"
                     [(ngModel)]="nombreEmpresa"
                     #nombreEmpresaCtrl="ngModel"
-                  ></ion-input>
+                  ></ion-textarea>
                 </ion-item>
                 <div
                   *ngIf="nombreEmpresaCtrl.invalid && nombreEmpresaCtrl.touched"
@@ -244,13 +242,12 @@
 
                 <ion-item>
                   <ion-label position="floating"><b>Sector</b></ion-label>
-                  <ion-input
-                    type="text"
+                  <ion-textarea
                     required
                     name="sector"
                     [(ngModel)]="sector"
                     #sectorCtrl="ngModel"
-                  ></ion-input>
+                  ></ion-textarea>
                 </ion-item>
                 <div
                   *ngIf="sectorCtrl.invalid && sectorCtrl.touched"
@@ -277,13 +274,12 @@
 
                 <ion-item>
                   <ion-label position="floating"><b>Sitio web</b></ion-label>
-                  <ion-input
-                    type="text"
+                  <ion-textarea
                     required
                     name="sitioWeb"
                     [(ngModel)]="sitioWeb"
                     #sitioWebCtrl="ngModel"
-                  ></ion-input>
+                  ></ion-textarea>
                 </ion-item>
                 <div
                   *ngIf="sitioWebCtrl.invalid && sitioWebCtrl.touched"
@@ -296,14 +292,16 @@
                   <ion-label position="floating"
                     ><b>Teléfono de contacto</b></ion-label
                   >
-                  <ion-input
-                    type="text"
+                  <ion-textarea
+                    [autoGrow]="true"
+                    rows="1"
                     required
                     pattern="^[0-9]{7,15}$"
                     name="telefonoContacto"
                     [(ngModel)]="telefonoContacto"
                     #telefonoContactoCtrl="ngModel"
-                  ></ion-input>
+                    class="ion-text-input"
+                  ></ion-textarea>
                 </ion-item>
                 <div
                   *ngIf="telefonoContactoCtrl.invalid && telefonoContactoCtrl.touched"
@@ -319,13 +317,12 @@
 
                 <ion-item>
                   <ion-label position="floating"><b>Dirección</b></ion-label>
-                  <ion-input
-                    type="text"
+                  <ion-textarea
                     required
                     name="direccionEmpresa"
                     [(ngModel)]="direccionEmpresa"
                     #direccionEmpresaCtrl="ngModel"
-                  ></ion-input>
+                  ></ion-textarea>
                 </ion-item>
                 <div
                   *ngIf="direccionEmpresaCtrl.invalid && direccionEmpresaCtrl.touched"

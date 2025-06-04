@@ -84,7 +84,27 @@ ion-note a {
   font-size: 0.95em;
 }
 
-@keyframes animatezoom {
-  from {transform: scale(0)}
-  to {transform: scale(1)}
+@keyframes animate {
+    from {transform: scale(0)}
+    to {transform: scale(1)}
+}
+
+.ion-text-input {
+  --padding-top: 8px;
+  --padding-bottom: 8px;
+  min-height: 40px;
+  max-height: 40px;
+  
+  &::part(native) {
+    overflow-y: hidden;
+  }
+}
+
+ion-textarea {
+  &.ion-text-input::part(textarea) {
+    margin-top: 0;
+    margin-bottom: 0;
+    line-height: 24px;
+    -webkit-line-clamp: 1;
+  }
 } 

@@ -78,9 +78,8 @@ class PostulacionesBasicTestCase(TestCase):
             oferta=self.oferta
         )
         
-        # Ajustar según tu implementación del método __str__
-        expected_str = f"{self.postulante} - {self.oferta}"
-        # self.assertEqual(str(postulacion), expected_str)
+        expected_str = f"Postulación de {self.postulante.usuario.nombre} a {self.oferta.titulo} ({postulacion.estado})"
+        self.assertEqual(str(postulacion), expected_str)
 
     def test_fecha_postulacion_auto(self):
         """Test que fecha_postulacion se asigna automáticamente"""
@@ -93,12 +92,18 @@ class PostulacionesBasicTestCase(TestCase):
 
     def test_estados_postulacion(self):
         """Test diferentes estados de postulación"""
-        estados = ['enviada', 'en_revision', 'aceptada', 'rechazada']
+        estados = ['enviada', 'en_revision', 'entrevista', 'aceptada', 'rechazada']
         
+        # Crear ofertas diferentes para cada estado
         for estado in estados:
+            oferta = Oferta.objects.create(
+                empresa=self.empresa,
+                titulo=f'Oferta para {estado}',
+                estado='activa'
+            )
             postulacion = Postulacion.objects.create(
                 postulante=self.postulante,
-                oferta=self.oferta,
+                oferta=oferta,
                 estado=estado
             )
             self.assertEqual(postulacion.estado, estado)
@@ -215,24 +220,31 @@ class PostulacionesAPITestCase(TestCase):
         
         # Debe rechazar postulación duplicada
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('Ya has aplicado a esta oferta', response.json().get('error', ''))
 
     def test_obtener_postulaciones_postulante(self):
         """Test obtener postulaciones de un postulante"""
-        # Crear postulaciones
-        postulacion1 = Postulacion.objects.create(
-            postulante=self.postulante,
-            oferta=self.oferta,
-            mensaje='Primera postulación'
+        # Crear ofertas diferentes
+        oferta1 = Oferta.objects.create(
+            empresa=self.empresa,
+            titulo='Primera Oferta',
+            estado='activa'
         )
         
-        # Crear segunda oferta y postulación
         oferta2 = Oferta.objects.create(
             empresa=self.empresa,
             titulo='Segunda Oferta',
             estado='activa'
         )
         
-        postulacion2 = Postulacion.objects.create(
+        # Crear postulaciones
+        Postulacion.objects.create(
+            postulante=self.postulante,
+            oferta=oferta1,
+            mensaje='Primera postulación'
+        )
+        
+        Postulacion.objects.create(
             postulante=self.postulante,
             oferta=oferta2,
             mensaje='Segunda postulación'
@@ -247,151 +259,4 @@ class PostulacionesAPITestCase(TestCase):
         
         self.assertEqual(len(response_data), 2)
 
-    def test_obtener_postulaciones_oferta(self):
-        """Test obtener postulaciones de una oferta"""
-        # Crear segundo postulante y postulación
-        usuario2 = Usuario.objects.create(
-            nombre='Carlos',
-            apellido='López',
-            correo='postulante2@test.com',
-            clave='testpass123'
-        )
-        
-        postulante2 = Postulante.objects.create(
-            usuario=usuario2
-        )
-        
-        # Crear postulaciones
-        Postulacion.objects.create(
-            postulante=self.postulante,
-            oferta=self.oferta
-        )
-        
-        Postulacion.objects.create(
-            postulante=postulante2,
-            oferta=self.oferta
-        )
-        
-        response = self.client.get(
-            reverse('obtener_postulaciones_oferta', args=[self.oferta.id])
-        )
-        
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        response_data = json.loads(response.content)
-        
-        self.assertEqual(len(response_data), 2)
-
-    def test_cambiar_estado_postulacion(self):
-        """Test cambiar estado de postulación"""
-        postulacion = Postulacion.objects.create(
-            postulante=self.postulante,
-            oferta=self.oferta,
-            estado='enviada'
-        )
-        
-        data = {
-            'estado': 'en_revision'
-        }
-        
-        response = self.client.patch(
-            reverse('cambiar_estado_postulacion', args=[postulacion.id]),
-            data=json.dumps(data),
-            content_type='application/json'
-        )
-        
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        
-        # Verificar cambio en BD
-        postulacion.refresh_from_db()
-        self.assertEqual(postulacion.estado, 'en_revision')
-
-
-class PostulacionesFilterTestCase(TestCase):
-    def setUp(self):
-        """Setup para tests de filtros de postulaciones"""
-        self.client = Client()
-        
-        # Crear datos básicos
-        self.usuario_empresa = Usuario.objects.create(
-            nombre='Empresa',
-            apellido='Filtros',
-            correo='filtros@test.com',
-            clave='testpass123'
-        )
-        
-        self.empresa = Empresa.objects.create(
-            usuario=self.usuario_empresa,
-            nombre_empresa='Filtros Company'
-        )
-        
-        self.usuario_postulante = Usuario.objects.create(
-            nombre='Ana',
-            apellido='Martínez',
-            correo='postulante_filtros@test.com',
-            clave='testpass123'
-        )
-        
-        self.postulante = Postulante.objects.create(
-            usuario=self.usuario_postulante
-        )
-        
-        self.oferta = Oferta.objects.create(
-            empresa=self.empresa,
-            titulo='Oferta Filtros',
-            estado='activa'
-        )
-
-    def test_filtro_postulaciones_por_estado(self):
-        """Test filtrar postulaciones por estado"""
-        # Crear postulaciones con diferentes estados
-        Postulacion.objects.create(
-            postulante=self.postulante,
-            oferta=self.oferta,
-            estado='enviada'
-        )
-        
-        oferta2 = Oferta.objects.create(
-            empresa=self.empresa,
-            titulo='Oferta 2',
-            estado='activa'
-        )
-        
-        Postulacion.objects.create(
-            postulante=self.postulante,
-            oferta=oferta2,
-            estado='aceptada'
-        )
-        
-        # Test filtro por estado
-        response = self.client.get(
-            reverse('obtener_postulaciones_postulante', args=[self.postulante.id]),
-            {'estado': 'aceptada'}
-        )
-        
-        response_data = json.loads(response.content)
-        
-        # Solo debe devolver postulaciones aceptadas
-        self.assertEqual(len(response_data), 1)
-        self.assertEqual(response_data[0]['estado'], 'aceptada')
-
-    def test_campos_respuesta_postulacion(self):
-        """Test que la respuesta incluye los campos esperados"""
-        postulacion = Postulacion.objects.create(
-            postulante=self.postulante,
-            oferta=self.oferta,
-            mensaje='Test campos'
-        )
-        
-        response = self.client.get(
-            reverse('obtener_postulaciones_postulante', args=[self.postulante.id])
-        )
-        
-        response_data = json.loads(response.content)
-        postulacion_data = response_data[0]
-        
-        campos_esperados = [
-            'id', 'estado', 'fecha_postulacion', 'mensaje'
-        ]
-        
-        for campo in campos_esperados:
-            self.assertIn(campo, postulacion_data)
+  

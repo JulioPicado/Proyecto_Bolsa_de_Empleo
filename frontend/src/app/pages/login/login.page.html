@@ -17,11 +17,19 @@
       <ion-list lines="none">
         <ion-item>
           <ion-label position="floating"><b>Correo</b></ion-label>
-          <ion-input type="email" required [(ngModel)]="correo" name="correo"></ion-input>
+          <ion-input 
+            type="email" 
+            required 
+            [(ngModel)]="correo" 
+            name="correo"></ion-input>
         </ion-item>
         <ion-item>
           <ion-label position="floating"><b>Contraseña</b></ion-label>
-          <ion-input type="password" required [(ngModel)]="contrasena" name="contrasena"></ion-input>
+          <ion-input 
+            type="password" 
+            required 
+            [(ngModel)]="contrasena" 
+            name="contrasena"></ion-input>
         </ion-item>
       </ion-list>
       <ion-button expand="block" type="submit" class="login-btn">Iniciar Sesión</ion-button>

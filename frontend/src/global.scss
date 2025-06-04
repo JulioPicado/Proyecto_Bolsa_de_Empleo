@@ -25,6 +25,46 @@
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
 
+/* Keyboard adjustments */
+.keyboard-is-open {
+  .modal-content,
+  ion-content {
+    --keyboard-offset: 0 !important;
+    --overflow: auto !important;
+  }
+
+  ion-input,
+  ion-select,
+  ion-textarea {
+    --padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Input focus styles */
+ion-input,
+ion-select {
+  &::part(native) {
+    padding: 8px !important;
+    border-radius: 4px !important;
+    background: var(--ion-color-light) !important;
+  }
+
+  &.ion-focused::part(native) {
+    border: 2px solid var(--ion-color-primary) !important;
+  }
+}
+
+ion-content {
+  --keyboard-offset: 0 !important;
+}
+
+ion-modal {
+  --height: auto;
+  &.keyboard-is-open {
+    --height: calc(100% - var(--keyboard-height));
+  }
+}
+
 /**
  * Ionic Dark Mode
  * -----------------------------------------------------

@@ -35,7 +35,7 @@ export class UsuariosPage implements OnInit {
 
   cargarUsuarios() {
     this.error = '';
-    this.http.get<any[]>('http://localhost:3000/api/usuarios')
+    this.http.get<any[]>('https://juzamabackend.ticocr.org/api/usuarios')
       .subscribe({
         next: data => this.usuarios = data,
         error: err => {
@@ -60,7 +60,7 @@ export class UsuariosPage implements OnInit {
   }
 
   guardarEdicion() {
-    this.http.put(`http://localhost:3000/api/usuarios/${this.usuarioEditar.id_usuario}`, this.usuarioEditar)
+    this.http.put(`https://juzamabackend.ticocr.org/api/usuarios/${this.usuarioEditar.id_usuario}`, this.usuarioEditar)
       .subscribe({
         next: () => {
           this.mostrarToast('Usuario actualizado correctamente');
@@ -74,7 +74,7 @@ export class UsuariosPage implements OnInit {
   }
 
   confirmarEliminar() {
-    this.http.delete(`http://localhost:3000/api/usuarios/${this.usuarioEliminar.id_usuario}`)
+    this.http.delete(`https://juzamabackend.ticocr.orgapi/usuarios/${this.usuarioEliminar.id_usuario}`)
       .subscribe({
         next: () => {
           this.mostrarToast('Usuario eliminado correctamente', 'danger');
