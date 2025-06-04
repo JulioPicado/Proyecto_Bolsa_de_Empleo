@@ -38,20 +38,27 @@ export class LoginPage implements OnInit {
     this.auth.login({ correo: this.correo, clave: this.contrasena }).subscribe({
       next: (res) => {
         this.mostrarToast('¡Bienvenido!', 'success');
+        
+        // Limpiar datos anteriores antes de guardar nuevos
+        localStorage.clear();
+        
         // Guardar usuario en localStorage para el menú
+        const userData = {
+          id: res.id,
+          nombre: res.nombre,
+          apellido: res.apellido,
+          correo: res.correo,
+          roles: res.roles,
+          perfiles: res.perfiles,
+          access: res.access,
+          refresh: res.refresh
+        };
+        
         localStorage.setItem(
           'userData',
-          JSON.stringify({
-            id: res.id,
-            nombre: res.nombre,
-            apellido: res.apellido,
-            correo: res.correo,
-            roles: res.roles,
-            perfiles: res.perfiles,
-            access: res.access,
-            refresh: res.refresh
-          })
+          JSON.stringify(userData)
         );
+        
         this.router.navigate(['/menu']);
       },
       error: (err) => {

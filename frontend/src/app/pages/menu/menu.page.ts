@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 
 @Component({
   selector: 'app-menu',
@@ -16,6 +16,8 @@ export class MenuPage implements OnInit {
   tipoUsuarioDebug: string = '';
   tipoValido: boolean = true;
   currentYear: number = new Date().getFullYear();
+
+  constructor(private router: Router) {}
 
   ngOnInit() {
     // Obtener datos del usuario desde localStorage
@@ -62,9 +64,21 @@ export class MenuPage implements OnInit {
     );
   }
 
+  cerrarSesion() {
+    // Limpiar completamente el localStorage
+    localStorage.removeItem('userData');
+    localStorage.removeItem('usuario'); // Por si quedó algún dato anterior
+    localStorage.clear(); // Limpiar todo el localStorage por seguridad
+    
+    // Redirigir al login
+    this.router.navigate(['/login']);
+  }
+
   // Función para determinar si el usuario tiene un rol específico
   tieneRol(rol: string): boolean {
     const usuario = JSON.parse(localStorage.getItem('userData') || '{}');
     return usuario && usuario.roles && usuario.roles.includes(rol);
   }
+
+
 }
