@@ -13,6 +13,15 @@ export interface Oferta {
   estado: string;
   empresa_id: number;
   empresa_nombre?: string;
+  num_postulaciones?: number;
+  postulaciones?: {
+    total: number;
+    enviada: number;
+    en_revision: number;
+    entrevista: number;
+    aceptada: number;
+    rechazada: number;
+  };
 }
 
 @Injectable({
@@ -37,5 +46,19 @@ export class OfertasService {
 
   crearOferta(data: any): Observable<Oferta> {
     return this.http.post<Oferta>(`${this.apiUrl}/ofertas/crear_oferta/`, data);
+  }
+
+  // Obtener ofertas de una empresa específica
+  getOfertasEmpresa(empresaId: number): Observable<Oferta[]> {
+    return this.http.get<Oferta[]>(`${this.apiUrl}/ofertas/obtener_ofertas_empresa/${empresaId}/`);
+  }
+
+  // Obtener ofertas de una empresa con filtros avanzados
+  getOfertasEmpresaConFiltros(empresaId: number, estado?: string): Observable<Oferta[]> {
+    let url = `${this.apiUrl}/ofertas/obtener_ofertas_empresa_filtros/?empresa_id=${empresaId}`;
+    if (estado) {
+      url += `&estado=${estado}`;
+    }
+    return this.http.get<Oferta[]>(url);
   }
 } 

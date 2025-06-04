@@ -77,3 +77,96 @@ def obtener_ofertas(request):
             'empresa_nombre': oferta.empresa.nombre_empresa
         })
     return Response(ofertas_data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def obtener_ofertas_empresa(request, empresa_id):
+    """
+    Obtiene todas las ofertas de una empresa específica.
+    """
+    try:
+        empresa = Empresa.objects.get(id=empresa_id)
+    except Empresa.DoesNotExist:
+        return Response({'error': 'Empresa no encontrada.'}, 
+                      status=status.HTTP_404_NOT_FOUND)
+    
+    # Obtener todas las ofertas de la empresa, ordenadas por fecha de publicación
+    ofertas = Oferta.objects.filter(empresa=empresa).order_by('-fecha_publicacion')
+    
+    ofertas_data = []
+    for oferta in ofertas:
+        # Contar cuántas postulaciones tiene cada oferta
+        num_postulaciones = Postulacion.objects.filter(oferta=oferta).count()
+        
+        ofertas_data.append({
+            'id': oferta.id,
+            'titulo': oferta.titulo,
+            'descripcion': oferta.descripcion,
+            'requisitos': oferta.requisitos,
+            'ubicacion': oferta.ubicacion,
+            'tipo_contrato': oferta.tipo_contrato,
+            'fecha_publicacion': oferta.fecha_publicacion,
+            'estado': oferta.estado,
+            'empresa_id': oferta.empresa.id,
+            'empresa_nombre': oferta.empresa.nombre_empresa,
+            'num_postulaciones': num_postulaciones
+        })
+    
+    return Response(ofertas_data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def obtener_ofertas_empresa_con_filtros(request):
+    """
+    Obtiene ofertas de una empresa con filtros opcionales.
+    Parámetros de query: empresa_id (obligatorio), estado (opcional)
+    """
+    empresa_id = request.GET.get('empresa_id', None)
+    
+    if not empresa_id:
+        return Response({'error': 'El parámetro empresa_id es obligatorio.'}, 
+                      status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+        empresa = Empresa.objects.get(id=empresa_id)
+    except Empresa.DoesNotExist:
+        return Response({'error': 'Empresa no encontrada.'}, 
+                      status=status.HTTP_404_NOT_FOUND)
+    
+    # Comenzar con todas las ofertas de la empresa
+    ofertas = Oferta.objects.filter(empresa=empresa)
+    
+    # Filtro opcional por estado
+    estado_filtro = request.GET.get('estado', None)
+    if estado_filtro:
+        ofertas = ofertas.filter(estado=estado_filtro)
+    
+    # Ordenar por fecha de publicación (más recientes primero)
+    ofertas = ofertas.order_by('-fecha_publicacion')
+    
+    ofertas_data = []
+    for oferta in ofertas:
+        # Contar postulaciones por estado
+        postulaciones_por_estado = {
+            'total': Postulacion.objects.filter(oferta=oferta).count(),
+            'enviada': Postulacion.objects.filter(oferta=oferta, estado='enviada').count(),
+            'en_revision': Postulacion.objects.filter(oferta=oferta, estado='en_revision').count(),
+            'entrevista': Postulacion.objects.filter(oferta=oferta, estado='entrevista').count(),
+            'aceptada': Postulacion.objects.filter(oferta=oferta, estado='aceptada').count(),
+            'rechazada': Postulacion.objects.filter(oferta=oferta, estado='rechazada').count(),
+        }
+        
+        ofertas_data.append({
+            'id': oferta.id,
+            'titulo': oferta.titulo,
+            'descripcion': oferta.descripcion,
+            'requisitos': oferta.requisitos,
+            'ubicacion': oferta.ubicacion,
+            'tipo_contrato': oferta.tipo_contrato,
+            'fecha_publicacion': oferta.fecha_publicacion,
+            'estado': oferta.estado,
+            'empresa_id': oferta.empresa.id,
+            'empresa_nombre': oferta.empresa.nombre_empresa,
+            'postulaciones': postulaciones_por_estado
+        })
+    
+    return Response(ofertas_data, status=status.HTTP_200_OK)

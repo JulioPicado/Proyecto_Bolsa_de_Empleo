@@ -15,7 +15,7 @@
       <div class="navbar-user">
         <span class="user-type">{{ tipoUsuario | titlecase }}</span>
         <span class="user-name">{{ nombreUsuario }}</span>
-        <a class="logout" routerLink="/login">Cerrar Sesión</a>
+        <button class="logout" (click)="cerrarSesion()">Cerrar Sesión</button>
       </div>
     </div>
   </ion-toolbar>
@@ -42,13 +42,9 @@
       </ng-container>
       <!-- Empresa -->
       <ng-container *ngIf="tipoUsuario === 'empresa'">
-        <div class="menu-card" routerLink="/ofertas">
-          <h2>Publicar Oferta</h2>
-          <p>Crea nuevas vacantes para tu empresa.</p>
-        </div>
-        <div class="menu-card" routerLink="/ofertas">
+        <div class="menu-card" routerLink="/ofertas-empresa">
           <h2>Mis Ofertas</h2>
-          <p>Gestiona las ofertas publicadas por tu empresa.</p>
+          <p>Gestiona y publica las ofertas de tu empresa.</p>
         </div>
         <div class="menu-card" routerLink="/postulantes">
           <h2>Ver Postulantes</h2>
@@ -79,6 +75,8 @@
         </div>
       </ng-container>
     </div>
+
+
   </div>
   <footer class="main-footer">
     <div class="footer-content">
@@ -175,6 +173,9 @@
   .logout {
     padding: 6px 18px;
     font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
     margin-left: 0;
     margin-right: 0;
     display: block !important;
@@ -184,8 +185,9 @@
     box-shadow: none !important;
     border: none !important;
     outline: none !important;
+    transition: background 0.2s;
   }
-  .logout:focus, .logout:active {
+  .logout:hover, .logout:focus, .logout:active {
     box-shadow: none !important;
     border: none !important;
     outline: none !important;
@@ -352,4 +354,6 @@
       padding: 12px 0 8px 0;
     }
   }
+
+
 </style> 

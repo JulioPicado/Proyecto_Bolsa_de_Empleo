@@ -1,0 +1,162 @@
+<ion-header [translucent]="true" class="main-navbar">
+  <ion-toolbar color="light" class="navbar" style="--background: #f5f7fa;">
+    <div class="navbar-content">
+      <div class="navbar-logo">
+        <img src="/assets/img/juzama3.png" alt="Logo JUZAMA" class="logo-navbar" />
+        <span class="system-name">JUZAMA - Gestión de Ofertas</span>
+      </div>
+      <div class="navbar-actions">
+        <button class="btn-back" (click)="volverAlMenu()">
+          <ion-icon name="arrow-back"></ion-icon>
+          Volver al Menú
+        </button>
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ofertas-content">
+  <div class="ofertas-container">
+    
+    <!-- Header de la página -->
+    <div class="page-header">
+      <h1>Gestión de Ofertas de Empleo</h1>
+      <p>Administra las vacantes de tu empresa</p>
+    </div>
+
+    <!-- Botón para crear nueva oferta -->
+    <div class="actions-section">
+      <button 
+        class="btn-primary" 
+        (click)="toggleFormularioCrear()"
+        [class.active]="mostrarFormularioCrear">
+        <ion-icon name="add-circle"></ion-icon>
+        {{ mostrarFormularioCrear ? 'Cancelar' : 'Crear Nueva Oferta' }}
+      </button>
+    </div>
+
+    <!-- Formulario para crear nueva oferta -->
+    <div *ngIf="mostrarFormularioCrear" class="management-card">
+      <h3>Crear Nueva Oferta</h3>
+      <form (ngSubmit)="crearOferta()" class="oferta-form">
+        <div class="form-group">
+          <label for="titulo">Título de la Oferta *</label>
+          <ion-input 
+            id="titulo"
+            [(ngModel)]="nuevaOferta.titulo"
+            name="titulo"
+            placeholder="Ej: Desarrollador Full Stack"
+            required>
+          </ion-input>
+        </div>
+        
+        <div class="form-group">
+          <label for="ubicacion">Ubicación</label>
+          <ion-input 
+            id="ubicacion"
+            [(ngModel)]="nuevaOferta.ubicacion"
+            name="ubicacion"
+            placeholder="Ej: Lima, Perú">
+          </ion-input>
+        </div>
+        
+        <div class="form-group">
+          <label for="tipo_contrato">Tipo de Contrato</label>
+          <ion-select 
+            id="tipo_contrato"
+            [(ngModel)]="nuevaOferta.tipo_contrato"
+            name="tipo_contrato"
+            placeholder="Selecciona el tipo">
+            <ion-select-option value="tiempo_completo">Tiempo Completo</ion-select-option>
+            <ion-select-option value="medio_tiempo">Medio Tiempo</ion-select-option>
+            <ion-select-option value="contrato">Por Contrato</ion-select-option>
+            <ion-select-option value="practicas">Prácticas</ion-select-option>
+            <ion-select-option value="freelance">Freelance</ion-select-option>
+          </ion-select>
+        </div>
+        
+        <div class="form-group">
+          <label for="descripcion">Descripción</label>
+          <ion-textarea 
+            id="descripcion"
+            [(ngModel)]="nuevaOferta.descripcion"
+            name="descripcion"
+            placeholder="Describe el puesto de trabajo..."
+            rows="4">
+          </ion-textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="requisitos">Requisitos</label>
+          <ion-textarea 
+            id="requisitos"
+            [(ngModel)]="nuevaOferta.requisitos"
+            name="requisitos"
+            placeholder="Lista los requisitos necesarios..."
+            rows="4">
+          </ion-textarea>
+        </div>
+        
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" (click)="toggleFormularioCrear()">
+            Cancelar
+          </button>
+          <button type="submit" class="btn-primary" [disabled]="!nuevaOferta.titulo">
+            Crear Oferta
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Lista de ofertas de la empresa -->
+    <div class="management-card">
+      <div class="ofertas-header">
+        <h3>Mis Ofertas Publicadas</h3>
+      </div>
+      
+      <div *ngIf="cargandoOfertas" class="loading-message">
+        <ion-spinner name="dots"></ion-spinner>
+        <p>Cargando ofertas...</p>
+      </div>
+      
+      <div *ngIf="!cargandoOfertas && ofertasEmpresa.length === 0" class="empty-message">
+        <p>No tienes ofertas publicadas aún.</p>
+        <button class="btn-primary" (click)="toggleFormularioCrear()">
+          Crear tu primera oferta
+        </button>
+      </div>
+      
+      <div class="ofertas-grid" *ngIf="!cargandoOfertas && ofertasEmpresa.length > 0">
+        <div *ngFor="let oferta of ofertasEmpresa" class="oferta-card">
+          <div class="oferta-header">
+            <h4>{{ oferta.titulo }}</h4>
+            <span class="estado-badge" [ngClass]="getEstadoBadgeClass(oferta.estado)">
+              {{ oferta.estado | titlecase }}
+            </span>
+          </div>
+          
+          <div class="oferta-info">
+            <p *ngIf="oferta.ubicacion"><strong>Ubicación:</strong> {{ oferta.ubicacion }}</p>
+            <p *ngIf="oferta.tipo_contrato"><strong>Tipo:</strong> {{ oferta.tipo_contrato }}</p>
+            <p><strong>Publicado:</strong> {{ oferta.fecha_publicacion | date:'short' }}</p>
+          </div>
+          
+          <div class="oferta-stats" *ngIf="oferta.num_postulaciones !== undefined">
+            <h5>Postulaciones</h5>
+            <div class="stats-simple">
+              <div class="stat-item">
+                <span class="stat-number">{{ oferta.num_postulaciones }}</span>
+                <span class="stat-label">Total de Postulaciones</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="oferta-description" *ngIf="oferta.descripcion">
+            <p>{{ oferta.descripcion }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</ion-content> 
