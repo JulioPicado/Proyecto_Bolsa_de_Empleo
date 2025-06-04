@@ -1,3 +1,7 @@
+ion-content {
+  --background: #F5F7FA;
+}
+
 .register-content {
   --background: #F5F7FA;
   display: flex;
@@ -8,9 +12,7 @@
 
 .register-modal {
   background: #fff;
-  margin: 5% auto 15% auto;
-  width: 90%;
-  max-width: 500px;
+  margin: 2rem auto;
   border-radius: 16px;
   box-shadow: 0 2px 16px rgba(0,0,0,0.08);
   padding: 32px 24px 24px 24px;
@@ -50,7 +52,80 @@ ion-input, ion-textarea {
   border-radius: 8px;
 }
 
+/* Estilos para el input de archivo */
+input[type="file"] {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  color: #222831;
+  background: #f0f0f0;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  font-size: 1em;
+  margin: 8px 0;
+  box-shadow: 0 1px 4px rgba(0,174,239,0.04);
+  transition: border-color 0.2s;
+}
+
+input[type="file"]:focus {
+  outline: none;
+  border-color: #00aeef;
+}
+
+input[type="file"]::-webkit-file-upload-button {
+  background: #00aeef;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+input[type="file"]:hover::-webkit-file-upload-button {
+  background: #007ba7;
+}
+
+.footer-content {
+  background: #f3f6fa;
+  color: #00aeef;
+  font-size: 1em;
+  font-weight: 600;
+  padding: 18px 0 10px 0;
+  text-align: center;
+  border-top: 1px solid #e6f7fb;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.footer-contact {
+  color: #222831;
+  font-size: 0.95em;
+  font-weight: 400;
+}
+
+.footer-version {
+  color: #888;
+  font-size: 0.9em;
+  font-weight: 400;
+}
+
 @keyframes animatezoom {
   from {transform: scale(0)}
   to {transform: scale(1)}
+}
+
+@media (max-width: 600px) {
+  .footer-content {
+    font-size: 0.95em;
+    padding: 12px 0 8px 0;
+  }
+  
+  .register-modal {
+    margin: 1rem auto;
+    padding: 24px 16px 16px 16px;
+  }
 } 

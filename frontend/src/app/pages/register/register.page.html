@@ -4,371 +4,366 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="register-content">
-  <div class="register-modal animate">
-    <h2 class="form-title">Registro de Usuario</h2>
-    <form #registerForm="ngForm" (ngSubmit)="onSubmit(registerForm)">
-      <ion-list lines="none">
-        <ion-item>
-          <ion-label position="floating"><b>Nombre</b></ion-label>
-          <ion-input
-            type="text"
-            required
-            name="nombre"
-            [(ngModel)]="nombre"
-            #nombreCtrl="ngModel"
-          ></ion-input>
-        </ion-item>
-        <div *ngIf="nombreCtrl.invalid && nombreCtrl.touched" class="error-msg">
-          El nombre es obligatorio.
-        </div>
+<ion-content [fullscreen]="true">
+  <ion-grid>
+    <ion-row class="ion-justify-content-center">
+      <ion-col size-md="8" size-lg="6" size="12">
+        <div class="register-modal animate">
+          <h2 class="form-title">Registro de Usuario</h2>
+          <form #registerForm="ngForm" (ngSubmit)="onSubmit(registerForm)">
+            <ion-list lines="none">
+              <ion-item>
+                <ion-label position="floating"><b>Nombre</b></ion-label>
+                <ion-input
+                  type="text"
+                  required
+                  name="nombre"
+                  [(ngModel)]="nombre"
+                  #nombreCtrl="ngModel"
+                ></ion-input>
+              </ion-item>
+              <div *ngIf="nombreCtrl.invalid && nombreCtrl.touched" class="error-msg">
+                El nombre es obligatorio.
+              </div>
 
-        <ion-item>
-          <ion-label position="floating"><b>Apellido</b></ion-label>
-          <ion-input
-            type="text"
-            required
-            name="apellido"
-            [(ngModel)]="apellido"
-            #apellidoCtrl="ngModel"
-          ></ion-input>
-        </ion-item>
-        <div
-          *ngIf="apellidoCtrl.invalid && apellidoCtrl.touched"
-          class="error-msg"
-        >
-          El apellido es obligatorio.
-        </div>
+              <ion-item>
+                <ion-label position="floating"><b>Apellido</b></ion-label>
+                <ion-input
+                  type="text"
+                  required
+                  name="apellido"
+                  [(ngModel)]="apellido"
+                  #apellidoCtrl="ngModel"
+                ></ion-input>
+              </ion-item>
+              <div
+                *ngIf="apellidoCtrl.invalid && apellidoCtrl.touched"
+                class="error-msg"
+              >
+                El apellido es obligatorio.
+              </div>
 
-        <ion-item>
-          <ion-label position="floating"><b>Correo</b></ion-label>
-          <ion-input
-            type="email"
-            required
-            email
-            name="correo"
-            [(ngModel)]="correo"
-            #correoCtrl="ngModel"
-          ></ion-input>
-        </ion-item>
-        <div *ngIf="correoCtrl.invalid && correoCtrl.touched" class="error-msg">
-          <span *ngIf="correoCtrl.errors?.['required']"
-            >El correo es obligatorio.</span
-          >
-          <span *ngIf="correoCtrl.errors?.['email']"
-            >El correo no es válido.</span
-          >
-        </div>
+              <ion-item>
+                <ion-label position="floating"><b>Correo</b></ion-label>
+                <ion-input
+                  type="email"
+                  required
+                  email
+                  name="correo"
+                  [(ngModel)]="correo"
+                  #correoCtrl="ngModel"
+                ></ion-input>
+              </ion-item>
+              <div *ngIf="correoCtrl.invalid && correoCtrl.touched" class="error-msg">
+                <span *ngIf="correoCtrl.errors?.['required']"
+                  >El correo es obligatorio.</span
+                >
+                <span *ngIf="correoCtrl.errors?.['email']"
+                  >El correo no es válido.</span
+                >
+              </div>
 
-        <ion-item>
-          <ion-label position="floating"><b>Clave</b></ion-label>
-          <ion-input
-            type="password"
-            required
-            minlength="6"
-            name="clave"
-            [(ngModel)]="clave"
-            #claveCtrl="ngModel"
-          ></ion-input>
-        </ion-item>
-        <div *ngIf="claveCtrl.invalid && claveCtrl.touched" class="error-msg">
-          <span *ngIf="claveCtrl.errors?.['required']"
-            >La clave es obligatoria.</span
-          >
-          <span *ngIf="claveCtrl.errors?.['minlength']"
-            >La clave debe tener al menos 6 caracteres.</span
-          >
-        </div>
+              <ion-item>
+                <ion-label position="floating"><b>Clave</b></ion-label>
+                <ion-input
+                  type="password"
+                  required
+                  minlength="6"
+                  name="clave"
+                  [(ngModel)]="clave"
+                  #claveCtrl="ngModel"
+                ></ion-input>
+              </ion-item>
+              <div *ngIf="claveCtrl.invalid && claveCtrl.touched" class="error-msg">
+                <span *ngIf="claveCtrl.errors?.['required']"
+                  >La clave es obligatoria.</span
+                >
+                <span *ngIf="claveCtrl.errors?.['minlength']"
+                  >La clave debe tener al menos 6 caracteres.</span
+                >
+              </div>
 
-        <ion-item>
-          <ion-label position="floating"><b>Confirmar clave</b></ion-label>
-          <ion-input
-            type="password"
-            required
-            name="confirmar_clave"
-            [(ngModel)]="confirmar_clave"
-            #confirmarClaveCtrl="ngModel"
-          ></ion-input>
-        </ion-item>
-        <div *ngIf="confirmarClaveCtrl.touched" class="error-msg">
-          <span *ngIf="confirmarClaveCtrl.errors?.['required']"
-            >La confirmación de clave es obligatoria.</span
-          >
-          <span *ngIf="clave !== confirmar_clave && confirmarClaveCtrl.touched"
-            >Las claves no coinciden.</span
-          >
-        </div>
+              <ion-item>
+                <ion-label position="floating"><b>Confirmar clave</b></ion-label>
+                <ion-input
+                  type="password"
+                  required
+                  name="confirmar_clave"
+                  [(ngModel)]="confirmar_clave"
+                  #confirmarClaveCtrl="ngModel"
+                ></ion-input>
+              </ion-item>
+              <div *ngIf="confirmarClaveCtrl.touched" class="error-msg">
+                <span *ngIf="confirmarClaveCtrl.errors?.['required']"
+                  >La confirmación de clave es obligatoria.</span
+                >
+                <span *ngIf="clave !== confirmar_clave && confirmarClaveCtrl.touched"
+                  >Las claves no coinciden.</span
+                >
+              </div>
 
-        <ion-item>
-          <ion-label position="floating"><b>Tipo de usuario</b></ion-label>
-          <ion-select
-            interface="popover"
-            placeholder="Selecciona tipo de usuario"
-            [(ngModel)]="tipoUsuario"
-            name="tipoUsuario"
-            required
-            #tipoUsuarioCtrl="ngModel"
-          >
-            <ion-select-option value="postulante">Postulante</ion-select-option>
-            <ion-select-option value="empresa">Empresa</ion-select-option>
-          </ion-select>
-        </ion-item>
-        <div
-          *ngIf="tipoUsuarioCtrl.invalid && tipoUsuarioCtrl.touched"
-          class="error-msg"
-        >
-          Selecciona un tipo de usuario.
-        </div>
+              <ion-item>
+                <ion-label position="floating"><b>Tipo de usuario</b></ion-label>
+                <ion-select
+                  interface="popover"
+                  placeholder="Selecciona tipo de usuario"
+                  [(ngModel)]="tipoUsuario"
+                  name="tipoUsuario"
+                  required
+                  #tipoUsuarioCtrl="ngModel"
+                >
+                  <ion-select-option value="postulante">Postulante</ion-select-option>
+                  <ion-select-option value="empresa">Empresa</ion-select-option>
+                </ion-select>
+              </ion-item>
+              <div
+                *ngIf="tipoUsuarioCtrl.invalid && tipoUsuarioCtrl.touched"
+                class="error-msg"
+              >
+                Selecciona un tipo de usuario.
+              </div>
 
-        <!-- Postulante -->
-        <div *ngIf="tipoUsuario === 'postulante'">
-          <ion-item>
-            <ion-label position="floating"><b>Currículum</b></ion-label>
-            <ion-textarea
-              required
-              name="curriculum"
-              [(ngModel)]="curriculum"
-              #curriculumCtrl="ngModel"
-            ></ion-textarea>
-          </ion-item>
-          <div
-            *ngIf="curriculumCtrl.invalid && curriculumCtrl.touched"
-            class="error-msg"
-          >
-            El currículum es obligatorio.
-          </div>
+              <!-- Postulante -->
+              <div *ngIf="tipoUsuario === 'postulante'">
+                <ion-item>
+                  <ion-label position="floating"><b>Currículum</b></ion-label>
+                  <input type="file" required name="curriculum" (change)="onFileSelected($event)" accept=".pdf,.doc,.docx,.odt,.rtf,.txt" />
+                </ion-item>
 
-          <ion-item>
-            <ion-label position="floating"
-              ><b>Experiencia Laboral</b></ion-label
+                <ion-item>
+                  <ion-label position="floating"
+                    ><b>Experiencia Laboral</b></ion-label
+                  >
+                  <ion-textarea
+                    required
+                    name="experiencia"
+                    [(ngModel)]="experiencia"
+                    #experienciaCtrl="ngModel"
+                  ></ion-textarea>
+                </ion-item>
+                <div
+                  *ngIf="experienciaCtrl.invalid && experienciaCtrl.touched"
+                  class="error-msg"
+                >
+                  La experiencia laboral es obligatoria.
+                </div>
+
+                <ion-item>
+                  <ion-label position="floating"><b>Educación</b></ion-label>
+                  <ion-textarea
+                    required
+                    name="educacion"
+                    [(ngModel)]="educacion"
+                    #educacionCtrl="ngModel"
+                  ></ion-textarea>
+                </ion-item>
+                <div
+                  *ngIf="educacionCtrl.invalid && educacionCtrl.touched"
+                  class="error-msg"
+                >
+                  La educación es obligatoria.
+                </div>
+
+                <ion-item>
+                  <ion-label position="floating"><b>Habilidades</b></ion-label>
+                  <ion-textarea
+                    required
+                    name="habilidades"
+                    [(ngModel)]="habilidades"
+                    #habilidadesCtrl="ngModel"
+                  ></ion-textarea>
+                </ion-item>
+                <div
+                  *ngIf="habilidadesCtrl.invalid && habilidadesCtrl.touched"
+                  class="error-msg"
+                >
+                  Las habilidades son obligatorias.
+                </div>
+
+                <ion-item>
+                  <ion-label position="floating"><b>Teléfono</b></ion-label>
+                  <ion-input
+                    type="text"
+                    required
+                    pattern="^[0-9]{7,15}$"
+                    name="telefono"
+                    [(ngModel)]="telefono"
+                    #telefonoCtrl="ngModel"
+                  ></ion-input>
+                </ion-item>
+                <div
+                  *ngIf="telefonoCtrl.invalid && telefonoCtrl.touched"
+                  class="error-msg"
+                >
+                  <span *ngIf="telefonoCtrl.errors?.['required']"
+                    >El teléfono es obligatorio.</span
+                  >
+                  <span *ngIf="telefonoCtrl.errors?.['pattern']"
+                    >El teléfono debe ser numérico (7-15 dígitos).</span
+                  >
+                </div>
+
+                <ion-item>
+                  <ion-label position="floating"><b>Dirección</b></ion-label>
+                  <ion-input
+                    type="text"
+                    required
+                    name="direccion"
+                    [(ngModel)]="direccion"
+                    #direccionCtrl="ngModel"
+                  ></ion-input>
+                </ion-item>
+                <div
+                  *ngIf="direccionCtrl.invalid && direccionCtrl.touched"
+                  class="error-msg"
+                >
+                  La dirección es obligatoria.
+                </div>
+              </div>
+
+              <!-- Empresa -->
+              <div *ngIf="tipoUsuario === 'empresa'">
+                <ion-item>
+                  <ion-label position="floating"
+                    ><b>Nombre de la empresa</b></ion-label
+                  >
+                  <ion-input
+                    type="text"
+                    required
+                    name="nombreEmpresa"
+                    [(ngModel)]="nombreEmpresa"
+                    #nombreEmpresaCtrl="ngModel"
+                  ></ion-input>
+                </ion-item>
+                <div
+                  *ngIf="nombreEmpresaCtrl.invalid && nombreEmpresaCtrl.touched"
+                  class="error-msg"
+                >
+                  El nombre de la empresa es obligatorio.
+                </div>
+
+                <ion-item>
+                  <ion-label position="floating"><b>Sector</b></ion-label>
+                  <ion-input
+                    type="text"
+                    required
+                    name="sector"
+                    [(ngModel)]="sector"
+                    #sectorCtrl="ngModel"
+                  ></ion-input>
+                </ion-item>
+                <div
+                  *ngIf="sectorCtrl.invalid && sectorCtrl.touched"
+                  class="error-msg"
+                >
+                  El sector es obligatorio.
+                </div>
+
+                <ion-item>
+                  <ion-label position="floating"><b>Descripción</b></ion-label>
+                  <ion-textarea
+                    required
+                    name="descripcion"
+                    [(ngModel)]="descripcion"
+                    #descripcionCtrl="ngModel"
+                  ></ion-textarea>
+                </ion-item>
+                <div
+                  *ngIf="descripcionCtrl.invalid && descripcionCtrl.touched"
+                  class="error-msg"
+                >
+                  La descripción es obligatoria.
+                </div>
+
+                <ion-item>
+                  <ion-label position="floating"><b>Sitio web</b></ion-label>
+                  <ion-input
+                    type="text"
+                    required
+                    name="sitioWeb"
+                    [(ngModel)]="sitioWeb"
+                    #sitioWebCtrl="ngModel"
+                  ></ion-input>
+                </ion-item>
+                <div
+                  *ngIf="sitioWebCtrl.invalid && sitioWebCtrl.touched"
+                  class="error-msg"
+                >
+                  El sitio web es obligatorio.
+                </div>
+
+                <ion-item>
+                  <ion-label position="floating"
+                    ><b>Teléfono de contacto</b></ion-label
+                  >
+                  <ion-input
+                    type="text"
+                    required
+                    pattern="^[0-9]{7,15}$"
+                    name="telefonoContacto"
+                    [(ngModel)]="telefonoContacto"
+                    #telefonoContactoCtrl="ngModel"
+                  ></ion-input>
+                </ion-item>
+                <div
+                  *ngIf="telefonoContactoCtrl.invalid && telefonoContactoCtrl.touched"
+                  class="error-msg"
+                >
+                  <span *ngIf="telefonoContactoCtrl.errors?.['required']"
+                    >El teléfono de contacto es obligatorio.</span
+                  >
+                  <span *ngIf="telefonoContactoCtrl.errors?.['pattern']"
+                    >El teléfono debe ser numérico (7-15 dígitos).</span
+                  >
+                </div>
+
+                <ion-item>
+                  <ion-label position="floating"><b>Dirección</b></ion-label>
+                  <ion-input
+                    type="text"
+                    required
+                    name="direccionEmpresa"
+                    [(ngModel)]="direccionEmpresa"
+                    #direccionEmpresaCtrl="ngModel"
+                  ></ion-input>
+                </ion-item>
+                <div
+                  *ngIf="direccionEmpresaCtrl.invalid && direccionEmpresaCtrl.touched"
+                  class="error-msg"
+                >
+                  La dirección es obligatoria.
+                </div>
+              </div>
+            </ion-list>
+            <ion-button
+              expand="block"
+              type="submit"
+              class="register-btn"
+              [disabled]="registerForm.invalid || (clave !== confirmar_clave)"
+              >Registrar</ion-button
             >
-            <ion-textarea
-              required
-              name="experiencia"
-              [(ngModel)]="experiencia"
-              #experienciaCtrl="ngModel"
-            ></ion-textarea>
-          </ion-item>
-          <div
-            *ngIf="experienciaCtrl.invalid && experienciaCtrl.touched"
-            class="error-msg"
-          >
-            La experiencia laboral es obligatoria.
-          </div>
-
-          <ion-item>
-            <ion-label position="floating"><b>Educación</b></ion-label>
-            <ion-textarea
-              required
-              name="educacion"
-              [(ngModel)]="educacion"
-              #educacionCtrl="ngModel"
-            ></ion-textarea>
-          </ion-item>
-          <div
-            *ngIf="educacionCtrl.invalid && educacionCtrl.touched"
-            class="error-msg"
-          >
-            La educación es obligatoria.
-          </div>
-
-          <ion-item>
-            <ion-label position="floating"><b>Habilidades</b></ion-label>
-            <ion-textarea
-              required
-              name="habilidades"
-              [(ngModel)]="habilidades"
-              #habilidadesCtrl="ngModel"
-            ></ion-textarea>
-          </ion-item>
-          <div
-            *ngIf="habilidadesCtrl.invalid && habilidadesCtrl.touched"
-            class="error-msg"
-          >
-            Las habilidades son obligatorias.
-          </div>
-
-          <ion-item>
-            <ion-label position="floating"><b>Teléfono</b></ion-label>
-            <ion-input
-              type="text"
-              required
-              pattern="^[0-9]{7,15}$"
-              name="telefono"
-              [(ngModel)]="telefono"
-              #telefonoCtrl="ngModel"
-            ></ion-input>
-          </ion-item>
-          <div
-            *ngIf="telefonoCtrl.invalid && telefonoCtrl.touched"
-            class="error-msg"
-          >
-            <span *ngIf="telefonoCtrl.errors?.['required']"
-              >El teléfono es obligatorio.</span
+            <ion-button
+              class="btn-volver-login"
+              expand="block"
+              fill="outline"
+              color="primary"
+              (click)="volverLogin()"
+              >Volver a Iniciar Sesión</ion-button
             >
-            <span *ngIf="telefonoCtrl.errors?.['pattern']"
-              >El teléfono debe ser numérico (7-15 dígitos).</span
-            >
-          </div>
-
-          <ion-item>
-            <ion-label position="floating"><b>Dirección</b></ion-label>
-            <ion-input
-              type="text"
-              required
-              name="direccion"
-              [(ngModel)]="direccion"
-              #direccionCtrl="ngModel"
-            ></ion-input>
-          </ion-item>
-          <div
-            *ngIf="direccionCtrl.invalid && direccionCtrl.touched"
-            class="error-msg"
-          >
-            La dirección es obligatoria.
-          </div>
+          </form>
         </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 
-        <!-- Empresa -->
-        <div *ngIf="tipoUsuario === 'empresa'">
-          <ion-item>
-            <ion-label position="floating"
-              ><b>Nombre de la empresa</b></ion-label
-            >
-            <ion-input
-              type="text"
-              required
-              name="nombreEmpresa"
-              [(ngModel)]="nombreEmpresa"
-              #nombreEmpresaCtrl="ngModel"
-            ></ion-input>
-          </ion-item>
-          <div
-            *ngIf="nombreEmpresaCtrl.invalid && nombreEmpresaCtrl.touched"
-            class="error-msg"
-          >
-            El nombre de la empresa es obligatorio.
-          </div>
-
-          <ion-item>
-            <ion-label position="floating"><b>Sector</b></ion-label>
-            <ion-input
-              type="text"
-              required
-              name="sector"
-              [(ngModel)]="sector"
-              #sectorCtrl="ngModel"
-            ></ion-input>
-          </ion-item>
-          <div
-            *ngIf="sectorCtrl.invalid && sectorCtrl.touched"
-            class="error-msg"
-          >
-            El sector es obligatorio.
-          </div>
-
-          <ion-item>
-            <ion-label position="floating"><b>Descripción</b></ion-label>
-            <ion-textarea
-              required
-              name="descripcion"
-              [(ngModel)]="descripcion"
-              #descripcionCtrl="ngModel"
-            ></ion-textarea>
-          </ion-item>
-          <div
-            *ngIf="descripcionCtrl.invalid && descripcionCtrl.touched"
-            class="error-msg"
-          >
-            La descripción es obligatoria.
-          </div>
-
-          <ion-item>
-            <ion-label position="floating"><b>Sitio web</b></ion-label>
-            <ion-input
-              type="text"
-              required
-              name="sitioWeb"
-              [(ngModel)]="sitioWeb"
-              #sitioWebCtrl="ngModel"
-            ></ion-input>
-          </ion-item>
-          <div
-            *ngIf="sitioWebCtrl.invalid && sitioWebCtrl.touched"
-            class="error-msg"
-          >
-            El sitio web es obligatorio.
-          </div>
-
-          <ion-item>
-            <ion-label position="floating"
-              ><b>Teléfono de contacto</b></ion-label
-            >
-            <ion-input
-              type="text"
-              required
-              pattern="^[0-9]{7,15}$"
-              name="telefonoContacto"
-              [(ngModel)]="telefonoContacto"
-              #telefonoContactoCtrl="ngModel"
-            ></ion-input>
-          </ion-item>
-          <div
-            *ngIf="telefonoContactoCtrl.invalid && telefonoContactoCtrl.touched"
-            class="error-msg"
-          >
-            <span *ngIf="telefonoContactoCtrl.errors?.['required']"
-              >El teléfono de contacto es obligatorio.</span
-            >
-            <span *ngIf="telefonoContactoCtrl.errors?.['pattern']"
-              >El teléfono debe ser numérico (7-15 dígitos).</span
-            >
-          </div>
-
-          <ion-item>
-            <ion-label position="floating"><b>Dirección</b></ion-label>
-            <ion-input
-              type="text"
-              required
-              name="direccionEmpresa"
-              [(ngModel)]="direccionEmpresa"
-              #direccionEmpresaCtrl="ngModel"
-            ></ion-input>
-          </ion-item>
-          <div
-            *ngIf="direccionEmpresaCtrl.invalid && direccionEmpresaCtrl.touched"
-            class="error-msg"
-          >
-            La dirección es obligatoria.
-          </div>
-        </div>
-      </ion-list>
-      <ion-button
-        expand="block"
-        type="submit"
-        class="register-btn"
-        [disabled]="registerForm.invalid || (clave !== confirmar_clave)"
-        >Registrar</ion-button
-      >
-      <ion-button
-        class="btn-volver-login"
-        expand="block"
-        fill="outline"
-        color="primary"
-        (click)="volverLogin()"
-        >Volver a Iniciar Sesión</ion-button
-      >
-    </form>
-  </div>
+  <ion-footer class="ion-no-border">
+    <div class="footer-content">
+      <span>© 2025 JUZAMA - Bolsa de Empleo. Todos los derechos reservados.</span>
+      <span class="footer-contact">Contacto: soporte&#64;juzama.com</span>
+      <span class="footer-version">Versión 1.0</span>
+    </div>
+  </ion-footer>
 </ion-content>
-
-<footer class="main-footer">
-  <div class="footer-content">
-    <span>© 2025 JUZAMA - Bolsa de Empleo. Todos los derechos reservados.</span>
-    <span class="footer-contact">Contacto: soporte&#64;juzama.com</span>
-    <span class="footer-version">Versión 1.0</span>
-  </div>
-</footer>
 
 <!-- Estilos para mensajes de error -->
 <style>
@@ -394,20 +389,6 @@
     letter-spacing: 1px;
   }
 
-  .main-footer {
-    width: 100%;
-    background: #f3f6fa;
-    color: #00aeef;
-    font-size: 1em;
-    font-weight: 600;
-    padding: 18px 0 10px 0;
-    text-align: center;
-    border-top: 1px solid #e6f7fb;
-    margin-top: 32px;
-    position: relative;
-    bottom: 0;
-    left: 0;
-  }
   .footer-content {
     display: flex;
     flex-direction: column;
@@ -425,7 +406,7 @@
     font-weight: 400;
   }
   @media (max-width: 600px) {
-    .main-footer {
+    .footer-content {
       font-size: 0.95em;
       padding: 12px 0 8px 0;
     }

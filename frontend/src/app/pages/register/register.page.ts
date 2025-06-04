@@ -21,7 +21,7 @@ export class RegisterPage implements OnInit {
   clave: string = ''; // Cambiado de contraseña a clave
   confirmar_clave: string = ''; // Campo nuevo
   // Postulante
-  curriculum: string = '';
+  curriculum: File | null = null;
   experiencia: string = '';
   educacion: string = '';
   habilidades: string = '';
@@ -50,6 +50,13 @@ export class RegisterPage implements OnInit {
     toast.present();
   }
 
+  onFileSelected(event: any) {
+    const file: File = event.target.files[0];
+    if (file) {
+      this.curriculum = file;
+    }
+  }
+
   onSubmit(form: any) {
     if (form.invalid || this.clave !== this.confirmar_clave) {
       if (this.clave !== this.confirmar_clave) {
@@ -61,20 +68,22 @@ export class RegisterPage implements OnInit {
     let obs$: Observable<any> | null = null;
 
     if (this.tipoUsuario === 'postulante') {
-      obs$ = this.auth.register({
-        nombre: this.nombre,
-        apellido: this.apellido,
-        correo: this.correo,
-        clave: this.clave, // Cambiado de contraseña a clave
-        confirmar_clave: this.confirmar_clave, // Campo nuevo
-        tipo_usuario: 'postulante',
-        curriculum: this.curriculum,
-        experiencia_laboral: this.experiencia,
-        educacion: this.educacion,
-        habilidades: this.habilidades,
-        telefono: this.telefono,
-        direccion: this.direccion,
-      });
+      const formData = new FormData();
+      formData.append('nombre', this.nombre);
+      formData.append('apellido', this.apellido);
+      formData.append('correo', this.correo);
+      formData.append('clave', this.clave);
+      formData.append('confirmar_clave', this.confirmar_clave);
+      formData.append('tipo_usuario', 'postulante');
+      if (this.curriculum) {
+        formData.append('curriculum', this.curriculum);
+      }
+      formData.append('experiencia_laboral', this.experiencia);
+      formData.append('educacion', this.educacion);
+      formData.append('habilidades', this.habilidades);
+      formData.append('telefono', this.telefono);
+      formData.append('direccion', this.direccion);
+      obs$ = this.auth.register(formData);
     } else if (this.tipoUsuario === 'empresa') {
       obs$ = this.auth.register({
         nombre: this.nombre,

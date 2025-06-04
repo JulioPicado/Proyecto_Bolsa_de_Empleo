@@ -40,10 +40,16 @@ export class LoginPage implements OnInit {
         this.mostrarToast('¡Bienvenido!', 'success');
         // Guardar usuario en localStorage para el menú
         localStorage.setItem(
-          'usuario',
+          'userData',
           JSON.stringify({
             id: res.id,
+            nombre: res.nombre,
+            apellido: res.apellido,
+            correo: res.correo,
             roles: res.roles,
+            perfiles: res.perfiles,
+            access: res.access,
+            refresh: res.refresh
           })
         );
         this.router.navigate(['/menu']);

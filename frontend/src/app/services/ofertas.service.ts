@@ -1,0 +1,41 @@
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+export interface Oferta {
+  id: number;
+  titulo: string;
+  descripcion?: string;
+  requisitos?: string;
+  ubicacion?: string;
+  tipo_contrato?: string;
+  fecha_publicacion: string;
+  estado: string;
+  empresa_id: number;
+  empresa_nombre?: string;
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class OfertasService {
+  private apiUrl = 'http://localhost:8000';
+
+  constructor(private http: HttpClient) { }
+
+  getOfertas(postulanteId?: number): Observable<Oferta[]> {
+    let url = `${this.apiUrl}/ofertas/obtener_ofertas/`;
+    if (postulanteId) {
+      url += `?postulante_id=${postulanteId}`;
+    }
+    return this.http.get<Oferta[]>(url);
+  }
+
+  getOferta(id: number): Observable<Oferta> {
+    return this.http.get<Oferta>(`${this.apiUrl}/ofertas/${id}/`);
+  }
+
+  crearOferta(data: any): Observable<Oferta> {
+    return this.http.post<Oferta>(`${this.apiUrl}/ofertas/crear_oferta/`, data);
+  }
+} 

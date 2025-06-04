@@ -19,7 +19,7 @@ export class MenuPage implements OnInit {
 
   ngOnInit() {
     // Obtener datos del usuario desde localStorage
-    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const usuario = JSON.parse(localStorage.getItem('userData') || '{}');
 
     // Verificar si el usuario tiene roles
     if (usuario && usuario.roles && usuario.roles.length > 0) {
@@ -64,7 +64,7 @@ export class MenuPage implements OnInit {
 
   // Función para determinar si el usuario tiene un rol específico
   tieneRol(rol: string): boolean {
-    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const usuario = JSON.parse(localStorage.getItem('userData') || '{}');
     return usuario && usuario.roles && usuario.roles.includes(rol);
   }
 }
