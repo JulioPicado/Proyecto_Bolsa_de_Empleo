@@ -43,6 +43,13 @@ class Postulacion(models.Model):
         null=True,
         verbose_name='Mensaje de presentación'
     )
+
+    archivo_adjunto = models.FileField(
+        upload_to='postulaciones/',
+        blank=True,
+        null=True,
+        verbose_name='Archivo adjunto'
+    )
     
     class Meta:
         db_table = 'postulaciones'

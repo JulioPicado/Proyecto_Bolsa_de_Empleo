@@ -59,14 +59,14 @@ def register(request):
                     usuario=usuario,
                     telefono=request.data.get('telefono', ''),
                     direccion=request.data.get('direccion', ''),
-                    curriculum=request.data.get('curriculum', ''),
+                    curriculum=request.FILES.get('curriculum', None),
                     experiencia_laboral=request.data.get('experiencia_laboral', ''),
                     educacion=request.data.get('educacion', ''),
                     habilidades=request.data.get('habilidades', '')
                 )
                 perfil_info = {
                     'id_postulante': postulante.id,
-                    'curriculum': postulante.curriculum,
+                    'curriculum': postulante.curriculum.url if postulante.curriculum else None,
                     'experiencia_laboral': postulante.experiencia_laboral,
                     'educacion': postulante.educacion,
                     'habilidades': postulante.habilidades
@@ -147,7 +147,7 @@ def login(request):
                     postulante = Postulante.objects.get(usuario=usuario)
                     perfiles['postulante'] = {
                         'id': postulante.id,
-                        'curriculum': postulante.curriculum,
+                        'curriculum': postulante.curriculum.url if postulante.curriculum else None,
                         'experiencia_laboral': postulante.experiencia_laboral,
                         'educacion': postulante.educacion,
                         'habilidades': postulante.habilidades

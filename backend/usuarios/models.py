@@ -31,7 +31,7 @@ class Usuario(models.Model):
 class Postulante(models.Model):
     """Información adicional para los usuarios de tipo postulante."""
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='postulante')
-    curriculum = models.TextField(blank=True, null=True)
+    curriculum = models.FileField(upload_to='curriculums/', blank=True, null=True)
     experiencia_laboral = models.TextField(blank=True, null=True)
     educacion = models.TextField(blank=True, null=True)
     habilidades = models.TextField(blank=True, null=True)
