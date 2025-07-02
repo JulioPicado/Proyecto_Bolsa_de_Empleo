@@ -79,6 +79,7 @@ def crear_postulacion(request):
 def obtener_postulaciones_postulante(request, postulante_id):
     """
     Obtiene todas las postulaciones de un postulante específico.
+    Parámetros de query opcionales: estado
     """
     try:
         postulante = Postulante.objects.get(id=postulante_id)
@@ -86,7 +87,14 @@ def obtener_postulaciones_postulante(request, postulante_id):
         return Response({'error': 'Postulante no encontrado.'}, 
                       status=status.HTTP_404_NOT_FOUND)
     
-    postulaciones = Postulacion.objects.filter(postulante=postulante).order_by('-fecha_postulacion')
+    postulaciones = Postulacion.objects.filter(postulante=postulante)
+    
+    # Filtro opcional por estado
+    estado_filtro = request.GET.get('estado', None)
+    if estado_filtro:
+        postulaciones = postulaciones.filter(estado=estado_filtro)
+    
+    postulaciones = postulaciones.order_by('-fecha_postulacion')
     
     postulaciones_data = []
     for postulacion in postulaciones:
@@ -108,6 +116,7 @@ def obtener_postulaciones_postulante(request, postulante_id):
 def obtener_postulaciones_oferta(request, oferta_id):
     """
     Obtiene todas las postulaciones para una oferta específica.
+    Parámetros de query opcionales: estado
     """
     try:
         oferta = Oferta.objects.get(id=oferta_id)
@@ -115,7 +124,14 @@ def obtener_postulaciones_oferta(request, oferta_id):
         return Response({'error': 'Oferta no encontrada.'}, 
                       status=status.HTTP_404_NOT_FOUND)
     
-    postulaciones = Postulacion.objects.filter(oferta=oferta).order_by('-fecha_postulacion')
+    postulaciones = Postulacion.objects.filter(oferta=oferta)
+    
+    # Filtro opcional por estado
+    estado_filtro = request.GET.get('estado', None)
+    if estado_filtro:
+        postulaciones = postulaciones.filter(estado=estado_filtro)
+    
+    postulaciones = postulaciones.order_by('-fecha_postulacion')
     
     postulaciones_data = []
     for postulacion in postulaciones:
