@@ -16,7 +16,7 @@ def crear_oferta(request):
             return Response({'error': f'El campo {field} es obligatorio.'}, status=status.HTTP_400_BAD_REQUEST)
 
     try:
-        empresa = Empresa.objects.get(id=data['empresa_id'])
+        empresa = Empresa.objects.get(usuario_id=data['empresa_id'])
     except Empresa.DoesNotExist:
         return Response({'error': 'Empresa no encontrada.'}, status=status.HTTP_404_NOT_FOUND)
 
