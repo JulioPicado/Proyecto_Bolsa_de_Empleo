@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule, Router } from '@angular/router';
+import { AuthService } from '../../auth.service';
+import { NotificacionesService } from '../../services/notificaciones.service';
 
 @Component({
   selector: 'app-menu',
@@ -17,11 +19,18 @@ export class MenuPage implements OnInit {
   tipoValido: boolean = true;
   currentYear: number = new Date().getFullYear();
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+    private notificacionesService: NotificacionesService
+  ) {}
 
   ngOnInit() {
     // Obtener datos del usuario desde localStorage
     const usuario = JSON.parse(localStorage.getItem('userData') || '{}');
+    
+    // DEBUG: Mostrar todos los datos del usuario
+    console.log('🔍 DEBUG - Datos completos del usuario en localStorage:', usuario);
 
     // Verificar si el usuario tiene roles
     if (usuario && usuario.roles && usuario.roles.length > 0) {
@@ -62,13 +71,28 @@ export class MenuPage implements OnInit {
       '| Detectado:',
       this.tipoUsuario
     );
+
+    // Inicializar notificaciones para postulantes
+    if (this.tipoUsuario === 'postulante') {
+      console.log('🔄 Inicializando notificaciones desde menu...');
+      console.log('🔍 DEBUG - ID del usuario:', usuario.id);
+      
+      // Forzar conexión directa para debugging
+      if (usuario.id) {
+        console.log('🚀 FORZANDO conexión WebSocket con ID:', usuario.id);
+        this.notificacionesService.conectar(usuario.id);
+      } else {
+        console.error('❌ ERROR: No se encontró ID del usuario para WebSocket');
+      }
+      
+      // También llamar al método del AuthService
+      this.authService.inicializarNotificaciones();
+    }
   }
 
   cerrarSesion() {
-    // Limpiar completamente el localStorage
-    localStorage.removeItem('userData');
-    localStorage.removeItem('usuario'); // Por si quedó algún dato anterior
-    localStorage.clear(); // Limpiar todo el localStorage por seguridad
+    // Desconectar notificaciones
+    this.authService.logout();
     
     // Redirigir al login
     this.router.navigate(['/login']);

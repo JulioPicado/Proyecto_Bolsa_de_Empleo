@@ -38,10 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'corsheaders',
+    'channels',
     'usuarios',
     'ofertas',
     'postulaciones',
-    'corsheaders'
 ]
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -124,7 +126,8 @@ DATABASES = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8100",  # Tu frontend en Ionic/Angular
     "http://127.0.0.1:8100",
-    
+    "http://localhost:4200",  # Angular dev server
+    "http://127.0.0.1:4200",
 ]
 
 CORS_ALLOW_METHODS = [
@@ -193,3 +196,16 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Configuración de Channels para WebSockets
+ASGI_APPLICATION = 'backend.asgi.application'
+
+# Configuración simple para desarrollo
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
+
+# Permitir conexiones WebSocket
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '*']

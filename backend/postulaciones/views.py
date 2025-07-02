@@ -5,6 +5,9 @@ from rest_framework import status
 from .models import Postulacion
 from ofertas.models import Oferta
 from usuarios.models import Postulante
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+from datetime import datetime
 
 # Create your views here.
 
@@ -196,6 +199,37 @@ def actualizar_estado_postulacion(request, postulacion_id):
         # Actualizar el estado
         postulacion.estado = nuevo_estado
         postulacion.save()
+        
+        # Enviar notificación WebSocket al postulante
+        channel_layer = get_channel_layer()
+        user_group_name = f'user_{postulacion.postulante.usuario.id}'
+        
+        # Determinar el mensaje según el estado
+        if nuevo_estado == 'aceptada':
+            mensaje = f'¡Felicidades! Tu postulación para "{postulacion.oferta.titulo}" ha sido ACEPTADA'
+        elif nuevo_estado == 'rechazada':
+            mensaje = f'Tu postulación para "{postulacion.oferta.titulo}" ha sido rechazada'
+        elif nuevo_estado == 'en_revision':
+            mensaje = f'Tu postulación para "{postulacion.oferta.titulo}" está en revisión'
+        elif nuevo_estado == 'entrevista':
+            mensaje = f'¡Buenas noticias! Has sido seleccionado para entrevista en "{postulacion.oferta.titulo}"'
+        else:
+            mensaje = f'El estado de tu postulación para "{postulacion.oferta.titulo}" ha cambiado a {nuevo_estado}'
+        
+        # Enviar notificación
+        async_to_sync(channel_layer.group_send)(
+            user_group_name,
+            {
+                'type': 'notificacion_postulacion',
+                'mensaje': mensaje,
+                'tipo': 'estado_postulacion',
+                'oferta_titulo': postulacion.oferta.titulo,
+                'estado': nuevo_estado,
+                'timestamp': datetime.now().isoformat()
+            }
+        )
+        
+        print(f"🔔 Notificación enviada a usuario {postulacion.postulante.usuario.id}: {mensaje}")
         
         return Response({
             'id': postulacion.id,
