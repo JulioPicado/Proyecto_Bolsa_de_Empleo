@@ -9,6 +9,7 @@ from rest_framework.authtoken.models import Token
 from .models import Usuario, Rol, Postulante, Empresa
 from django.contrib.auth.hashers import check_password, make_password
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.db import models
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -185,5 +186,62 @@ def login(request):
                             status=status.HTTP_401_UNAUTHORIZED)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+def buscar_candidatos(request):
+    """
+    Busca candidatos (postulantes) con filtros opcionales.
+    Solo accesible para empresas.
+    Parámetros de query: nombre (opcional), habilidades (opcional), experiencia (opcional)
+    """
+    # Verificar que el usuario tenga rol de empresa
+    # Por ahora permitimos acceso general, pero en producción deberías verificar el token
+    
+    # Obtener parámetros de búsqueda
+    nombre = request.GET.get('nombre', '').strip()
+    habilidades = request.GET.get('habilidades', '').strip()
+    experiencia = request.GET.get('experiencia', '').strip()
+    
+    # Comenzar con todos los postulantes
+    postulantes = Postulante.objects.select_related('usuario').all()
+    
+    # Aplicar filtros si se proporcionan
+    if nombre:
+        postulantes = postulantes.filter(
+            models.Q(usuario__nombre__icontains=nombre) |
+            models.Q(usuario__apellido__icontains=nombre)
+        )
+    
+    if habilidades:
+        postulantes = postulantes.filter(habilidades__icontains=habilidades)
+    
+    if experiencia:
+        postulantes = postulantes.filter(experiencia_laboral__icontains=experiencia)
+    
+    # Ordenar por nombre
+    postulantes = postulantes.order_by('usuario__nombre', 'usuario__apellido')
+    
+    # Preparar datos de respuesta
+    candidatos_data = []
+    for postulante in postulantes:
+        candidatos_data.append({
+            'id': postulante.id,
+            'usuario_id': postulante.usuario.id,
+            'nombre': postulante.usuario.nombre,
+            'apellido': postulante.usuario.apellido,
+            'correo': postulante.usuario.correo,
+            'telefono': postulante.telefono,
+            'direccion': postulante.direccion,
+            'experiencia_laboral': postulante.experiencia_laboral,
+            'educacion': postulante.educacion,
+            'habilidades': postulante.habilidades,
+            'curriculum': postulante.curriculum.url if postulante.curriculum else None,
+            'fecha_registro': postulante.usuario.fecha_registro
+        })
+    
+    return Response({
+        'candidatos': candidatos_data,
+        'total': len(candidatos_data)
+    }, status=status.HTTP_200_OK)
 
 

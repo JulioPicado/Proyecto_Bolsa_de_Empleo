@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ModalController } from '@ionic/angular';
 import { RouterModule, Router } from '@angular/router';
 import { OfertasService, Oferta } from '../../services/ofertas.service';
 import { FormsModule } from '@angular/forms';
+import { PostulacionesService, Postulacion } from '../../services/postulaciones.service';
 
 @Component({
   selector: 'app-ofertas-empresa',
@@ -18,6 +19,11 @@ export class OfertasEmpresaPage implements OnInit {
   cargandoOfertas: boolean = false;
   mostrarFormularioCrear: boolean = false;
   
+  // Para mostrar postulantes por oferta
+  postulantesPorOferta: { [ofertaId: number]: Postulacion[] } = {};
+  ofertaExpandida: number | null = null;
+  cargandoPostulantes: { [ofertaId: number]: boolean } = {};
+  
   // Formulario para nueva oferta
   nuevaOferta = {
     titulo: '',
@@ -28,9 +34,14 @@ export class OfertasEmpresaPage implements OnInit {
     estado: 'activa'
   };
 
+  postulanteSeleccionado: any = null;
+  mostrarModalPostulante: boolean = false;
+
   constructor(
     private router: Router,
-    private ofertasService: OfertasService
+    private ofertasService: OfertasService,
+    private postulacionesService: PostulacionesService,
+    private modalController: ModalController
   ) {}
 
   ngOnInit() {
@@ -109,5 +120,49 @@ export class OfertasEmpresaPage implements OnInit {
 
   volverAlMenu() {
     this.router.navigate(['/menu']);
+  }
+
+  verPostulantesOferta(ofertaId: number) {
+    console.log('Click en verPostulantesOferta', ofertaId);
+    this.ofertaExpandida = this.ofertaExpandida === ofertaId ? null : ofertaId;
+    if (this.ofertaExpandida) {
+      this.cargandoPostulantes[ofertaId] = true;
+      this.postulacionesService.obtenerPostulacionesOferta(ofertaId).subscribe({
+        next: (postulaciones) => {
+          this.postulantesPorOferta[ofertaId] = postulaciones.map(p => ({ ...p, expandido: false }));
+          this.cargandoPostulantes[ofertaId] = false;
+        },
+        error: (err) => {
+          this.postulantesPorOferta[ofertaId] = [];
+          this.cargandoPostulantes[ofertaId] = false;
+        }
+      });
+    }
+  }
+
+  verDetallePostulante(postulacion: any) {
+    this.postulanteSeleccionado = postulacion;
+    this.mostrarModalPostulante = true;
+  }
+
+  cerrarModalPostulante() {
+    this.mostrarModalPostulante = false;
+    this.postulanteSeleccionado = null;
+  }
+
+  aceptarPostulacion(postulacion: any) {
+    // Aquí irá la lógica para aceptar la postulación
+    console.log('Aceptar postulación:', postulacion);
+    // Cambiar estado localmente para demo
+    postulacion.estado = 'aceptada';
+    this.cerrarModalPostulante();
+  }
+
+  rechazarPostulacion(postulacion: any) {
+    // Aquí irá la lógica para rechazar la postulación
+    console.log('Rechazar postulación:', postulacion);
+    // Cambiar estado localmente para demo
+    postulacion.estado = 'rechazada';
+    this.cerrarModalPostulante();
   }
 } 

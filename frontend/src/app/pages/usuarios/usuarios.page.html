@@ -10,31 +10,82 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="usuarios-content">
-  <div class="usuarios-main-layout">
-    <div class="usuarios-central-container">
-      <h2 class="usuarios-title">Usuarios Registrados</h2>
-      <div class="usuarios-table-wrapper">
-        <!-- Eliminar la tabla, dejar solo las tarjetas -->
-        <!-- Tarjetas responsivas para todas las resoluciones -->
-        <div class="usuarios-cards-grid" *ngIf="usuarios && usuarios.length > 0">
-          <div class="usuario-card-grid" *ngFor="let usuario of usuarios">
-            <div><b>ID:</b> {{ usuario.id_usuario }}</div>
-            <div><b>Nombre:</b> {{ usuario.nombre }}</div>
-            <div><b>Apellido:</b> {{ usuario.apellido }}</div>
-            <div><b>Correo:</b> {{ usuario.correo }}</div>
-            <div><b>Tipo:</b> {{ usuario.tipo_usuario | titlecase }}</div>
-            <div><b>Fecha Registro:</b> {{ usuario.fecha_registro | date:'short' }}</div>
-            <div class="usuario-card-actions">
-              <button class="btn-action edit" (click)="abrirEditar(usuario)">Editar</button>
-              <button class="btn-action delete" (click)="abrirEliminar(usuario)">Eliminar</button>
+  <div class="main-container">
+    <div class="buscador-container">
+      <h2 class="usuarios-title">Buscar Candidatos</h2>
+      <form class="filtros-form">
+        <div class="filtro-item">
+          <label>Nombre:</label>
+          <input type="text" [(ngModel)]="filtros.nombre" name="nombre" placeholder="Buscar por nombre o apellido">
+        </div>
+        <div class="filtro-item">
+          <label>Habilidades:</label>
+          <input type="text" [(ngModel)]="filtros.habilidades" name="habilidades" placeholder="Ej: Python, Django, React">
+        </div>
+        <div class="filtro-item">
+          <label>Experiencia:</label>
+          <input type="text" [(ngModel)]="filtros.experiencia" name="experiencia" placeholder="Ej: 5 años, desarrollo web">
+        </div>
+        <div class="filtros-actions">
+          <button class="btn-action edit" (click)="buscarCandidatos()" [disabled]="cargando" type="button">
+            {{ cargando ? 'Buscando...' : 'Buscar Candidatos' }}
+          </button>
+          <button class="btn-action" (click)="limpiarFiltros()" type="button">Limpiar</button>
+        </div>
+      </form>
+    </div>
+    <div class="usuarios-container">
+      <!-- Resultados de búsqueda de candidatos -->
+      <div *ngIf="mostrarCandidatos" class="resultados-candidatos">
+        <h3>Resultados de la búsqueda ({{ candidatos.length }} candidatos)</h3>
+        <div class="candidatos-grid" *ngIf="candidatos.length > 0">
+          <div class="candidato-card" *ngFor="let candidato of candidatos">
+            <div class="candidato-header">
+              <h4>{{ candidato.nombre }} {{ candidato.apellido }}</h4>
+              <span class="candidato-email">{{ candidato.correo }}</span>
+            </div>
+            <div class="candidato-info">
+              <div *ngIf="candidato.telefono"><b>Teléfono:</b> {{ candidato.telefono }}</div>
+              <div *ngIf="candidato.direccion"><b>Dirección:</b> {{ candidato.direccion }}</div>
+              <div *ngIf="candidato.experiencia_laboral"><b>Experiencia:</b> {{ candidato.experiencia_laboral }}</div>
+              <div *ngIf="candidato.educacion"><b>Educación:</b> {{ candidato.educacion }}</div>
+              <div *ngIf="candidato.habilidades"><b>Habilidades:</b> {{ candidato.habilidades }}</div>
+            </div>
+            <div class="candidato-actions">
+              <button class="btn-action edit" (click)="verDetalleCandidato(candidato)">Ver Detalles</button>
+              <button class="btn-action" (click)="descargarCurriculum(candidato)" *ngIf="candidato.curriculum">
+                Descargar CV
+              </button>
             </div>
           </div>
         </div>
-        <div *ngIf="usuarios && usuarios.length === 0" class="usuarios-empty">
-          No hay usuarios registrados.
+        <div *ngIf="candidatos.length === 0" class="usuarios-empty">
+          No se encontraron candidatos con los filtros especificados.
         </div>
-        <div *ngIf="error" class="error-msg">
-          {{ error }}
+      </div>
+      <div class="usuarios-container" *ngIf="tipoUsuario !== 'empresa'">
+        <h2 class="usuarios-title">Usuarios Registrados</h2>
+        <div class="usuarios-table-wrapper">
+          <div class="usuarios-cards-grid" *ngIf="usuarios && usuarios.length > 0">
+            <div class="usuario-card-grid" *ngFor="let usuario of usuarios">
+              <div><b>ID:</b> {{ usuario.id_usuario }}</div>
+              <div><b>Nombre:</b> {{ usuario.nombre }}</div>
+              <div><b>Apellido:</b> {{ usuario.apellido }}</div>
+              <div><b>Correo:</b> {{ usuario.correo }}</div>
+              <div><b>Tipo:</b> {{ usuario.tipo_usuario | titlecase }}</div>
+              <div><b>Fecha Registro:</b> {{ usuario.fecha_registro | date:'short' }}</div>
+              <div class="usuario-card-actions">
+                <button class="btn-action edit" (click)="abrirEditar(usuario)">Editar</button>
+                <button class="btn-action delete" (click)="abrirEliminar(usuario)">Eliminar</button>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="usuarios && usuarios.length === 0" class="usuarios-empty">
+            No hay usuarios registrados.
+          </div>
+          <div *ngIf="error" class="error-msg">
+            {{ error }}
+          </div>
         </div>
       </div>
     </div>
@@ -294,6 +345,120 @@
       margin: 0 auto;
     }
   }
+  /* Estilos para búsqueda de candidatos */
+  .busqueda-candidatos-section {
+    margin-bottom: 40px;
+  }
+  
+  .filtros-container {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 16px rgba(0,174,239,0.10);
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  
+  .filtro-item {
+    margin-bottom: 16px;
+  }
+  
+  .filtro-item label {
+    display: block;
+    color: #00AEEF;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  
+  .filtro-item input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #e6f7fb;
+    border-radius: 8px;
+    font-size: 1em;
+    transition: border-color 0.2s;
+  }
+  
+  .filtro-item input:focus {
+    outline: none;
+    border-color: #00AEEF;
+  }
+  
+  .filtros-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  .resultados-candidatos {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 16px rgba(0,174,239,0.10);
+    padding: 24px;
+  }
+  
+  .resultados-candidatos h3 {
+    color: #00AEEF;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .candidatos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+  }
+  
+  .candidato-card {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid #e6f7fb;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .candidato-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,174,239,0.15);
+  }
+  
+  .candidato-header {
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e6f7fb;
+  }
+  
+  .candidato-header h4 {
+    color: #00AEEF;
+    margin: 0 0 6px 0;
+    font-size: 1.2em;
+  }
+  
+  .candidato-email {
+    color: #666;
+    font-size: 0.9em;
+  }
+  
+  .candidato-info {
+    margin-bottom: 16px;
+  }
+  
+  .candidato-info div {
+    margin-bottom: 8px;
+    color: #333;
+    font-size: 0.95em;
+  }
+  
+  .candidato-info b {
+    color: #00AEEF;
+  }
+  
+  .candidato-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-start;
+  }
+  
   @media (max-width: 600px) {
     .navbar-content {
       flex-direction: column;
@@ -310,6 +475,26 @@
     }
     .usuarios-table-wrapper {
       padding: 8px 0;
+    }
+    
+    .filtros-container {
+      padding: 16px;
+    }
+    
+    .filtros-actions {
+      flex-direction: column;
+    }
+    
+    .candidatos-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .candidato-card {
+      padding: 16px;
+    }
+    
+    .candidato-actions {
+      flex-direction: column;
     }
   }
 </style> 

@@ -12,6 +12,7 @@ export interface Postulacion {
   estado: string;
   mensaje?: string;
   archivo_adjunto?: string;
+  expandido?: boolean;
 }
 
 @Injectable({

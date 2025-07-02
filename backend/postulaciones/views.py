@@ -128,3 +128,34 @@ def obtener_postulaciones_oferta(request, oferta_id):
         })
     
     return Response(postulaciones_data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def obtener_postulantes_empresa(request, empresa_id):
+    """
+    Devuelve los postulantes que han aplicado a ofertas de una empresa específica.
+    """
+    # Obtener todas las ofertas de la empresa
+    ofertas = Oferta.objects.filter(empresa_id=empresa_id)
+    # Obtener todas las postulaciones a esas ofertas
+    postulaciones = Postulacion.objects.filter(oferta__in=ofertas)
+    # Obtener los postulantes únicos
+    postulantes = Postulante.objects.filter(id__in=postulaciones.values_list('postulante_id', flat=True)).distinct()
+    # Serializar los datos
+    candidatos_data = []
+    for postulante in postulantes:
+        candidatos_data.append({
+            'id': postulante.id,
+            'usuario_id': postulante.usuario.id,
+            'nombre': postulante.usuario.nombre,
+            'apellido': postulante.usuario.apellido,
+            'correo': postulante.usuario.correo,
+            'telefono': postulante.telefono,
+            'direccion': postulante.direccion,
+            'experiencia_laboral': postulante.experiencia_laboral,
+            'educacion': postulante.educacion,
+            'habilidades': postulante.habilidades,
+            'curriculum': postulante.curriculum.url if postulante.curriculum else None,
+            'fecha_registro': postulante.usuario.fecha_registro
+        })
+    return Response({'candidatos': candidatos_data, 'total': len(candidatos_data)}, status=status.HTTP_200_OK)

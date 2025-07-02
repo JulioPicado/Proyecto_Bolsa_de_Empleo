@@ -204,3 +204,137 @@ class UsuariosAPITestCase(TestCase):
         """Test obtener usuarios via API (si existe endpoint)"""
         # Si tienes un endpoint para listar usuarios
         pass
+
+
+class BuscarCandidatosTestCase(TestCase):
+    def setUp(self):
+        """Setup para tests de búsqueda de candidatos"""
+        self.client = Client()
+        
+        # Crear usuarios postulantes para las pruebas
+        self.usuario1 = Usuario.objects.create(
+            nombre='Juan',
+            apellido='Pérez',
+            correo='juan@test.com',
+            clave='testpass123'
+        )
+        
+        self.postulante1 = Postulante.objects.create(
+            usuario=self.usuario1,
+            telefono='123456789',
+            direccion='Calle A 123',
+            experiencia_laboral='5 años en desarrollo web',
+            educacion='Ingeniería en Sistemas',
+            habilidades='Python, Django, React'
+        )
+        
+        self.usuario2 = Usuario.objects.create(
+            nombre='María',
+            apellido='González',
+            correo='maria@test.com',
+            clave='testpass123'
+        )
+        
+        self.postulante2 = Postulante.objects.create(
+            usuario=self.usuario2,
+            telefono='987654321',
+            direccion='Calle B 456',
+            experiencia_laboral='3 años en desarrollo móvil',
+            educacion='Técnico en Informática',
+            habilidades='JavaScript, React Native, Node.js'
+        )
+
+    def test_buscar_candidatos_sin_filtros(self):
+        """Test buscar candidatos sin filtros"""
+        response = self.client.get(reverse('buscar_candidatos'))
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response_data = json.loads(response.content)
+        
+        self.assertEqual(response_data['total'], 2)
+        self.assertEqual(len(response_data['candidatos']), 2)
+
+    def test_buscar_candidatos_por_nombre(self):
+        """Test buscar candidatos por nombre"""
+        response = self.client.get(
+            reverse('buscar_candidatos'),
+            {'nombre': 'Juan'}
+        )
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response_data = json.loads(response.content)
+        
+        self.assertEqual(response_data['total'], 1)
+        self.assertEqual(response_data['candidatos'][0]['nombre'], 'Juan')
+
+    def test_buscar_candidatos_por_habilidades(self):
+        """Test buscar candidatos por habilidades"""
+        response = self.client.get(
+            reverse('buscar_candidatos'),
+            {'habilidades': 'Python'}
+        )
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response_data = json.loads(response.content)
+        
+        self.assertEqual(response_data['total'], 1)
+        self.assertIn('Python', response_data['candidatos'][0]['habilidades'])
+
+    def test_buscar_candidatos_por_experiencia(self):
+        """Test buscar candidatos por experiencia"""
+        response = self.client.get(
+            reverse('buscar_candidatos'),
+            {'experiencia': 'desarrollo web'}
+        )
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response_data = json.loads(response.content)
+        
+        self.assertEqual(response_data['total'], 1)
+        self.assertIn('desarrollo web', response_data['candidatos'][0]['experiencia_laboral'])
+
+    def test_buscar_candidatos_con_multiples_filtros(self):
+        """Test buscar candidatos con múltiples filtros"""
+        response = self.client.get(
+            reverse('buscar_candidatos'),
+            {
+                'nombre': 'María',
+                'habilidades': 'React'
+            }
+        )
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response_data = json.loads(response.content)
+        
+        self.assertEqual(response_data['total'], 1)
+        self.assertEqual(response_data['candidatos'][0]['nombre'], 'María')
+
+    def test_buscar_candidatos_sin_resultados(self):
+        """Test buscar candidatos que no existen"""
+        response = self.client.get(
+            reverse('buscar_candidatos'),
+            {'nombre': 'Carlos'}
+        )
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response_data = json.loads(response.content)
+        
+        self.assertEqual(response_data['total'], 0)
+        self.assertEqual(len(response_data['candidatos']), 0)
+
+    def test_campos_respuesta_candidato(self):
+        """Test que la respuesta incluye los campos esperados"""
+        response = self.client.get(reverse('buscar_candidatos'))
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response_data = json.loads(response.content)
+        
+        candidato = response_data['candidatos'][0]
+        campos_esperados = [
+            'id', 'usuario_id', 'nombre', 'apellido', 'correo',
+            'telefono', 'direccion', 'experiencia_laboral', 'educacion',
+            'habilidades', 'curriculum', 'fecha_registro'
+        ]
+        
+        for campo in campos_esperados:
+            self.assertIn(campo, candidato)

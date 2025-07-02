@@ -6,6 +6,8 @@ from . import views
 urlpatterns = [
     path('crear_postulacion/', views.crear_postulacion, name='crear_postulacion'),
     path('obtener_postulaciones_postulante/<int:postulante_id>/', views.obtener_postulaciones_postulante, name='obtener_postulaciones_postulante'),
+    path('obtener_postulantes_empresa/<int:empresa_id>/', views.obtener_postulantes_empresa, name='obtener_postulantes_empresa'),
+    path('obtener_postulaciones_oferta/<int:oferta_id>/', views.obtener_postulaciones_oferta, name='obtener_postulaciones_oferta'),
 ]
 
 if settings.DEBUG:

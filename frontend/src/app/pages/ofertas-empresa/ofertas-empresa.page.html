@@ -154,9 +154,59 @@
           <div class="oferta-description" *ngIf="oferta.descripcion">
             <p>{{ oferta.descripcion }}</p>
           </div>
+          <div class="oferta-actions">
+            <button class="btn-action" (click)="verPostulantesOferta(oferta.id)">
+              {{ ofertaExpandida === oferta.id ? 'Ocultar Postulantes' : 'Ver Postulantes' }}
+            </button>
+          </div>
+          <div *ngIf="ofertaExpandida === oferta.id" class="postulantes-list">
+            <div *ngIf="cargandoPostulantes[oferta.id]">
+              <ion-spinner name="dots"></ion-spinner> Cargando postulantes...
+            </div>
+            <div *ngIf="!cargandoPostulantes[oferta.id] && postulantesPorOferta[oferta.id] && postulantesPorOferta[oferta.id].length > 0">
+              <h5>Postulantes:</h5>
+              <div class="postulante-card" *ngFor="let postulacion of postulantesPorOferta[oferta.id]; let i = index">
+                <div class="postulante-header">
+                  <b>{{ postulacion.postulante_nombre || 'Postulante #' + postulacion.postulante_id }}</b>
+                  <span *ngIf="postulacion.estado"> - Estado: {{ postulacion.estado }}</span>
+                  <button class="btn-action" (click)="verDetallePostulante(postulacion)">Ver detalles</button>
+                </div>
+                <div class="postulante-detalles" *ngIf="!!postulacion.expandido">
+                  <div *ngIf="postulacion.mensaje"><b>Mensaje:</b> {{ postulacion.mensaje }}</div>
+                  <div *ngIf="postulacion.archivo_adjunto">
+                    <b>CV:</b> <a [href]="postulacion.archivo_adjunto" target="_blank">Ver CV</a>
+                  </div>
+                  <button class="btn-action aceptar" (click)="aceptarPostulacion(postulacion)">Aceptar Postulación</button>
+                  <!-- Aquí puedes agregar más campos si los tienes disponibles -->
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
+  </div>
+
+  <!-- Modal Detalle Postulante -->
+  <div class="modal-bg" *ngIf="mostrarModalPostulante">
+    <div class="modal postulante-modal">
+      <h2>Detalle del Postulante</h2>
+      <div *ngIf="postulanteSeleccionado">
+        <p><b>Nombre:</b> {{ postulanteSeleccionado.postulante_nombre }}</p>
+        <p><b>Correo:</b> {{ postulanteSeleccionado.postulante_correo }}</p>
+        <p><b>Estado:</b> {{ postulanteSeleccionado.estado }}</p>
+        <p *ngIf="postulanteSeleccionado.mensaje"><b>Mensaje:</b> {{ postulanteSeleccionado.mensaje }}</p>
+        <p *ngIf="postulanteSeleccionado.archivo_adjunto">
+          <b>CV:</b> <a [href]="postulanteSeleccionado.archivo_adjunto" target="_blank">Ver CV</a>
+        </p>
+        <!-- Agrega aquí más campos si están disponibles -->
+      </div>
+      <div class="modal-actions">
+        <button class="btn-action aceptar" (click)="aceptarPostulacion(postulanteSeleccionado)">Aceptar Postulación</button>
+        <button class="btn-action rechazar" (click)="rechazarPostulacion(postulanteSeleccionado)">Rechazar Postulación</button>
+        <button class="btn-action" (click)="cerrarModalPostulante()">Cerrar</button>
+      </div>
+    </div>
   </div>
 </ion-content> 
