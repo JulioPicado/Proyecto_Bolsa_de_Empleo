@@ -12,7 +12,7 @@
 <ion-content [fullscreen]="true" class="usuarios-content">
   <div class="main-container">
     <div class="buscador-container">
-      <h2 class="usuarios-title">Buscar Candidatos</h2>
+      <h2 class="usuarios-title">Buscar Postulaciones</h2>
       <form class="filtros-form">
         <div class="filtro-item">
           <label>Nombre:</label>
@@ -27,111 +27,103 @@
           <input type="text" [(ngModel)]="filtros.experiencia" name="experiencia" placeholder="Ej: 5 años, desarrollo web">
         </div>
         <div class="filtros-actions">
-          <button class="btn-action edit" (click)="buscarCandidatos()" [disabled]="cargando" type="button">
-            {{ cargando ? 'Buscando...' : 'Buscar Candidatos' }}
+          <button class="btn-action edit" (click)="buscarPostulaciones()" [disabled]="cargando" type="button">
+            {{ cargando ? 'Buscando...' : 'Buscar Postulaciones' }}
           </button>
           <button class="btn-action" (click)="limpiarFiltros()" type="button">Limpiar</button>
         </div>
       </form>
     </div>
     <div class="usuarios-container">
-      <!-- Resultados de búsqueda de candidatos -->
-      <div *ngIf="mostrarCandidatos" class="resultados-candidatos">
-        <h3>Resultados de la búsqueda ({{ candidatos.length }} candidatos)</h3>
-        <div class="candidatos-grid" *ngIf="candidatos.length > 0">
-          <div class="candidato-card" *ngFor="let candidato of candidatos">
+      <!-- Resultados de búsqueda de postulaciones -->
+      <div *ngIf="mostrarPostulaciones" class="resultados-candidatos">
+        <h3>Resultados de la búsqueda ({{ postulaciones.length }} postulaciones)</h3>
+        <div class="candidatos-grid" *ngIf="postulaciones.length > 0">
+          <div class="candidato-card" *ngFor="let postulacion of postulaciones">
             <div class="candidato-header">
-              <h4>{{ candidato.nombre }} {{ candidato.apellido }}</h4>
-              <span class="candidato-email">{{ candidato.correo }}</span>
+              <h4>{{ postulacion.postulante_nombre }}</h4>
+              <span class="candidato-email">{{ postulacion.postulante_correo }}</span>
+              <div class="oferta-info">
+                <strong>Oferta:</strong> {{ postulacion.oferta_titulo }}
+              </div>
             </div>
-            <div class="candidato-info">
-              <div *ngIf="candidato.telefono"><b>Teléfono:</b> {{ candidato.telefono }}</div>
-              <div *ngIf="candidato.direccion"><b>Dirección:</b> {{ candidato.direccion }}</div>
-              <div *ngIf="candidato.experiencia_laboral"><b>Experiencia:</b> {{ candidato.experiencia_laboral }}</div>
-              <div *ngIf="candidato.educacion"><b>Educación:</b> {{ candidato.educacion }}</div>
-              <div *ngIf="candidato.habilidades"><b>Habilidades:</b> {{ candidato.habilidades }}</div>
-            </div>
+            
             <div class="candidato-actions">
-              <button class="btn-action edit" (click)="verDetalleCandidato(candidato)">Ver Detalles</button>
-              <button class="btn-action" (click)="descargarCurriculum(candidato)" *ngIf="candidato.curriculum">
+              <button class="btn-action edit" (click)="verDetallePostulacion(postulacion)">Ver Detalles</button>
+              <button class="btn-action" (click)="descargarCurriculum(postulacion)" *ngIf="postulacion.curriculum">
                 Descargar CV
+              </button>
+              <button class="btn-action" (click)="descargarArchivoAdjunto(postulacion)" *ngIf="postulacion.archivo_adjunto">
+                Descargar Archivo
               </button>
             </div>
           </div>
         </div>
-        <div *ngIf="candidatos.length === 0" class="usuarios-empty">
-          No se encontraron candidatos con los filtros especificados.
+        <div *ngIf="postulaciones.length === 0" class="usuarios-empty">
+          No se encontraron postulaciones con los filtros especificados.
         </div>
       </div>
-      <div class="usuarios-container" *ngIf="tipoUsuario !== 'empresa'">
-        <h2 class="usuarios-title">Usuarios Registrados</h2>
-        <div class="usuarios-table-wrapper">
-          <div class="usuarios-cards-grid" *ngIf="usuarios && usuarios.length > 0">
-            <div class="usuario-card-grid" *ngFor="let usuario of usuarios">
-              <div><b>ID:</b> {{ usuario.id_usuario }}</div>
-              <div><b>Nombre:</b> {{ usuario.nombre }}</div>
-              <div><b>Apellido:</b> {{ usuario.apellido }}</div>
-              <div><b>Correo:</b> {{ usuario.correo }}</div>
-              <div><b>Tipo:</b> {{ usuario.tipo_usuario | titlecase }}</div>
-              <div><b>Fecha Registro:</b> {{ usuario.fecha_registro | date:'short' }}</div>
-              <div class="usuario-card-actions">
-                <button class="btn-action edit" (click)="abrirEditar(usuario)">Editar</button>
-                <button class="btn-action delete" (click)="abrirEliminar(usuario)">Eliminar</button>
-              </div>
-            </div>
-          </div>
-          <div *ngIf="usuarios && usuarios.length === 0" class="usuarios-empty">
-            No hay usuarios registrados.
-          </div>
-          <div *ngIf="error" class="error-msg">
-            {{ error }}
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal Editar Usuario -->
-  <div class="modal-bg" *ngIf="usuarioEditar">
-    <div class="modal">
-      <h2>Editar Usuario</h2>
-      <form (ngSubmit)="guardarEdicion()">
-        <label>Nombre
-          <input [(ngModel)]="usuarioEditar.nombre" name="nombre" required />
-        </label>
-        <label>Apellido
-          <input [(ngModel)]="usuarioEditar.apellido" name="apellido" required />
-        </label>
-        <label>Correo
-          <input [(ngModel)]="usuarioEditar.correo" name="correo" required type="email" />
-        </label>
-        <label>Tipo de usuario
-          <select [(ngModel)]="usuarioEditar.tipo_usuario" name="tipo_usuario" required>
-            <option value="administrador">Administrador</option>
-            <option value="empresa">Empresa</option>
-            <option value="postulante">Postulante</option>
-          </select>
-        </label>
-        <div class="modal-actions">
-          <button type="submit" class="btn-action edit">Guardar</button>
-          <button type="button" class="btn-action" (click)="cerrarModal()">Cancelar</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Modal Confirmar Eliminación -->
-  <div class="modal-bg" *ngIf="usuarioEliminar">
-    <div class="modal">
-      <h2>¿Eliminar usuario?</h2>
-      <p>¿Estás seguro de que deseas eliminar a <b>{{ usuarioEliminar.nombre }} {{ usuarioEliminar.apellido }}</b>?</p>
-      <div class="modal-actions">
-        <button class="btn-action delete" (click)="confirmarEliminar()">Eliminar</button>
-        <button class="btn-action" (click)="cerrarModal()">Cancelar</button>
+      <div *ngIf="error" class="error-msg">
+        {{ error }}
       </div>
     </div>
   </div>
 </ion-content>
+
+<!-- Modal Detalle Postulación -->
+<div class="modal-bg" *ngIf="mostrarModalPostulacion">
+  <div class="modal postulacion-modal">
+    <h2>Detalle de la Postulación</h2>
+    <div *ngIf="postulacionSeleccionada">
+      <div class="modal-section">
+        <h3>Información del Postulante</h3>
+        <p><b>Nombre:</b> {{ postulacionSeleccionada.postulante_nombre }}</p>
+        <p><b>Correo:</b> {{ postulacionSeleccionada.postulante_correo }}</p>
+        <p *ngIf="postulacionSeleccionada.telefono"><b>Teléfono:</b> {{ postulacionSeleccionada.telefono }}</p>
+        <p *ngIf="postulacionSeleccionada.direccion"><b>Dirección:</b> {{ postulacionSeleccionada.direccion }}</p>
+      </div>
+      
+      <div class="modal-section">
+        <h3>Información Profesional</h3>
+        <p *ngIf="postulacionSeleccionada.experiencia_laboral"><b>Experiencia:</b> {{ postulacionSeleccionada.experiencia_laboral }}</p>
+        <p *ngIf="postulacionSeleccionada.educacion"><b>Educación:</b> {{ postulacionSeleccionada.educacion }}</p>
+        <p *ngIf="postulacionSeleccionada.habilidades"><b>Habilidades:</b> {{ postulacionSeleccionada.habilidades }}</p>
+      </div>
+      
+      <div class="modal-section">
+        <h3>Información de la Postulación</h3>
+        <p><b>Oferta:</b> {{ postulacionSeleccionada.oferta_titulo }}</p>
+        <p><b>Estado:</b> {{ postulacionSeleccionada.estado }}</p>
+        <p><b>Fecha de Postulación:</b> {{ postulacionSeleccionada.fecha_postulacion | date:'medium' }}</p>
+        <p *ngIf="postulacionSeleccionada.mensaje"><b>Mensaje:</b> {{ postulacionSeleccionada.mensaje }}</p>
+      </div>
+      
+      <div class="modal-section" *ngIf="postulacionSeleccionada.curriculum || postulacionSeleccionada.archivo_adjunto">
+        <h3>Archivos Adjuntos</h3>
+        <p *ngIf="postulacionSeleccionada.curriculum">
+          <b>Currículum:</b> 
+          <a [href]="postulacionSeleccionada.curriculum" target="_blank" class="file-link">Ver CV</a>
+        </p>
+        <p *ngIf="postulacionSeleccionada.archivo_adjunto">
+          <b>Archivo Adjunto:</b> 
+          <a [href]="postulacionSeleccionada.archivo_adjunto" target="_blank" class="file-link">Ver Archivo</a>
+        </p>
+      </div>
+    </div>
+    
+    <div class="modal-actions">
+      <button class="btn-action aceptar" (click)="aceptarPostulacion()">
+        Aceptar Postulación
+      </button>
+      <button class="btn-action rechazar" (click)="rechazarPostulacion()">
+        Rechazar Postulación
+      </button>
+      <button class="btn-action" (click)="cerrarModalPostulacion()">
+        Cerrar
+      </button>
+    </div>
+  </div>
+</div>
 
 <style>
   body, .usuarios-content {

@@ -4,7 +4,7 @@ import { IonicModule, ToastController } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { UsuariosService, Candidato } from '../../services/usuarios.service';
+import { PostulacionesService } from '../../services/postulaciones.service';
 
 @Component({
   selector: 'app-usuarios',
@@ -14,13 +14,10 @@ import { UsuariosService, Candidato } from '../../services/usuarios.service';
   imports: [IonicModule, CommonModule, FormsModule]
 })
 export class UsuariosPage implements OnInit {
-  usuarios: any[] = [];
-  candidatos: Candidato[] = [];
+  postulaciones: any[] = [];
   error: string = '';
-  usuarioEditar: any = null;
-  usuarioEliminar: any = null;
   
-  // Filtros para búsqueda de candidatos
+  // Filtros para búsqueda de postulaciones
   filtros = {
     nombre: '',
     habilidades: '',
@@ -28,32 +25,29 @@ export class UsuariosPage implements OnInit {
   };
   
   cargando = false;
-  mostrarCandidatos = false;
-  tipoUsuario: string = '';
+  mostrarPostulaciones = false;
   empresaId: number | null = null;
 
-  // Lista completa de postulantes a las ofertas de la empresa
-  postulantesEmpresa: Candidato[] = [];
+  // Lista completa de postulaciones de la empresa
+  postulacionesEmpresa: any[] = [];
+
+  // Variables para el modal
+  mostrarModalPostulacion: boolean = false;
+  postulacionSeleccionada: any = null;
 
   constructor(
     private http: HttpClient, 
     private toastCtrl: ToastController, 
     private router: Router,
-    private usuariosService: UsuariosService
+    private postulacionesService: PostulacionesService
   ) {}
 
   ngOnInit() {
-    this.tipoUsuario = localStorage.getItem('tipoUsuario') || '';
-    if (this.tipoUsuario === 'empresa') {
-      const empresa = JSON.parse(localStorage.getItem('empresa') || '{}');
-      this.empresaId = empresa.id || null;
-      if (this.empresaId) {
-        this.cargarPostulantesEmpresa();
-      }
-    } else if (this.tipoUsuario === 'administrador') {
-      this.cargarUsuarios();
+    const usuario = JSON.parse(localStorage.getItem('userData') || '{}');
+    if (usuario.id) {
+      this.empresaId = usuario.id; // Usar usuario_id para buscar empresa
+      this.cargarPostulacionesEmpresa();
     }
-    // Si es postulante, no mostrar lista de usuarios ni candidatos
   }
 
   async mostrarToast(mensaje: string, color: string = 'success') {
@@ -65,76 +59,59 @@ export class UsuariosPage implements OnInit {
     toast.present();
   }
 
-  cargarUsuarios() {
-    this.error = '';
-    this.http.get<any[]>('http://localhost:3000/api/usuarios')
-      .subscribe({
-        next: data => this.usuarios = data,
-        error: err => {
-          this.error = err.error?.error || 'Error al cargar usuarios';
-          this.usuarios = [];
-        }
-      });
-  }
-
-  cargarPostulantesEmpresa() {
+  cargarPostulacionesEmpresa() {
     if (!this.empresaId) return;
     this.cargando = true;
-    this.usuariosService.obtenerPostulantesEmpresa(this.empresaId).subscribe({
+    console.log('🔍 Cargando postulaciones para empresa ID:', this.empresaId);
+    this.postulacionesService.obtenerPostulantesEmpresa(this.empresaId).subscribe({
       next: (response) => {
-        this.postulantesEmpresa = response.candidatos;
-        this.candidatos = [...this.postulantesEmpresa]; // Mostrar todos por defecto
-        this.mostrarCandidatos = true;
+        console.log('✅ Respuesta del servidor:', response);
+        this.postulacionesEmpresa = response.postulaciones || [];
+        this.postulaciones = [...this.postulacionesEmpresa]; // Mostrar todas por defecto
+        this.mostrarPostulaciones = true;
         this.cargando = false;
-        this.mostrarToast(`Se encontraron ${response.total} postulantes para tus ofertas`);
+        console.log('📊 Postulaciones cargadas:', this.postulaciones);
+        this.mostrarToast(`Se encontraron ${response.total} postulaciones para tus ofertas`);
       },
       error: (err) => {
-        this.error = 'Error al cargar postulantes';
-        this.candidatos = [];
+        console.error('❌ Error al cargar postulaciones:', err);
+        this.error = 'Error al cargar postulaciones';
+        this.postulaciones = [];
         this.cargando = false;
-        this.mostrarToast('Error al cargar postulantes', 'danger');
+        this.mostrarToast('Error al cargar postulaciones', 'danger');
       }
     });
   }
 
-  // Métodos para búsqueda de candidatos
-  buscarCandidatos() {
-    if (this.tipoUsuario === 'empresa') {
-      if (this.empresaId) {
-        this.cargando = true;
-        this.usuariosService.buscarPostulantesEmpresa(this.empresaId, this.filtros).subscribe({
-          next: (response) => {
-            this.candidatos = response.candidatos;
-            this.mostrarCandidatos = true;
-            this.cargando = false;
-            this.mostrarToast(`Se encontraron ${response.total} postulantes filtrados`);
-          },
-          error: (err) => {
-            this.error = 'Error al buscar postulantes';
-            this.candidatos = [];
-            this.cargando = false;
-            this.mostrarToast('Error al buscar postulantes', 'danger');
-          }
-        });
-      }
-      return;
+  // Filtrar postulaciones localmente
+  buscarPostulaciones() {
+    if (!this.postulacionesEmpresa.length) return;
+    
+    let postulacionesFiltradas = [...this.postulacionesEmpresa];
+    
+    // Filtrar por nombre
+    if (this.filtros.nombre.trim()) {
+      postulacionesFiltradas = postulacionesFiltradas.filter(p => 
+        p.postulante_nombre?.toLowerCase().includes(this.filtros.nombre.toLowerCase())
+      );
     }
-    this.cargando = true;
-    this.error = '';
-    this.usuariosService.buscarCandidatos(this.filtros).subscribe({
-      next: (response) => {
-        this.candidatos = response.candidatos;
-        this.mostrarCandidatos = true;
-        this.cargando = false;
-        this.mostrarToast(`Se encontraron ${response.total} candidatos`);
-      },
-      error: (err) => {
-        this.error = 'Error al buscar candidatos';
-        this.candidatos = [];
-        this.cargando = false;
-        this.mostrarToast('Error al buscar candidatos', 'danger');
-      }
-    });
+    
+    // Filtrar por habilidades
+    if (this.filtros.habilidades.trim()) {
+      postulacionesFiltradas = postulacionesFiltradas.filter(p => 
+        p.habilidades?.toLowerCase().includes(this.filtros.habilidades.toLowerCase())
+      );
+    }
+    
+    // Filtrar por experiencia
+    if (this.filtros.experiencia.trim()) {
+      postulacionesFiltradas = postulacionesFiltradas.filter(p => 
+        p.experiencia_laboral?.toLowerCase().includes(this.filtros.experiencia.toLowerCase())
+      );
+    }
+    
+    this.postulaciones = postulacionesFiltradas;
+    this.mostrarToast(`Se encontraron ${postulacionesFiltradas.length} postulaciones filtradas`);
   }
 
   limpiarFiltros() {
@@ -143,72 +120,94 @@ export class UsuariosPage implements OnInit {
       habilidades: '',
       experiencia: ''
     };
-    if (this.tipoUsuario === 'empresa') {
-      this.candidatos = [...this.postulantesEmpresa];
-      this.mostrarCandidatos = true;
-      return;
+    this.postulaciones = [...this.postulacionesEmpresa];
+    this.mostrarPostulaciones = true;
+  }
+
+  verDetallePostulacion(postulacion: any) {
+    this.postulacionSeleccionada = postulacion;
+    this.mostrarModalPostulacion = true;
+  }
+
+  aceptarPostulacion() {
+    if (this.postulacionSeleccionada) {
+      this.postulacionesService.actualizarEstadoPostulacion(
+        this.postulacionSeleccionada.id, 
+        'aceptada'
+      ).subscribe({
+        next: (response) => {
+          console.log('Postulación aceptada:', response);
+          // Actualizar el estado en ambas listas
+          const updateEstado = (lista: any[]) => {
+            const index = lista.findIndex(p => p.id === this.postulacionSeleccionada.id);
+            if (index !== -1) {
+              lista[index].estado = 'aceptada';
+            }
+          };
+          
+          updateEstado(this.postulaciones);
+          updateEstado(this.postulacionesEmpresa);
+          
+          this.cerrarModalPostulacion();
+          this.mostrarToast('Postulación aceptada correctamente', 'success');
+        },
+        error: (error) => {
+          console.error('Error al aceptar postulación:', error);
+          this.mostrarToast('Error al aceptar la postulación', 'danger');
+        }
+      });
     }
-    this.candidatos = [];
-    this.mostrarCandidatos = false;
   }
 
-  verDetalleCandidato(candidato: Candidato) {
-    // Aquí podrías abrir un modal con más detalles del candidato
-    this.mostrarToast(`Ver detalles de ${candidato.nombre} ${candidato.apellido}`);
+  rechazarPostulacion() {
+    if (this.postulacionSeleccionada) {
+      this.postulacionesService.actualizarEstadoPostulacion(
+        this.postulacionSeleccionada.id, 
+        'rechazada'
+      ).subscribe({
+        next: (response) => {
+          console.log('Postulación rechazada:', response);
+          // Actualizar el estado en ambas listas
+          const updateEstado = (lista: any[]) => {
+            const index = lista.findIndex(p => p.id === this.postulacionSeleccionada.id);
+            if (index !== -1) {
+              lista[index].estado = 'rechazada';
+            }
+          };
+          
+          updateEstado(this.postulaciones);
+          updateEstado(this.postulacionesEmpresa);
+          
+          this.cerrarModalPostulacion();
+          this.mostrarToast('Postulación rechazada correctamente', 'warning');
+        },
+        error: (error) => {
+          console.error('Error al rechazar postulación:', error);
+          this.mostrarToast('Error al rechazar la postulación', 'danger');
+        }
+      });
+    }
   }
 
-  descargarCurriculum(candidato: Candidato) {
-    if (candidato.curriculum) {
-      window.open(candidato.curriculum, '_blank');
+  cerrarModalPostulacion() {
+    this.mostrarModalPostulacion = false;
+    this.postulacionSeleccionada = null;
+  }
+
+  descargarCurriculum(postulacion: any) {
+    if (postulacion.curriculum) {
+      window.open(postulacion.curriculum, '_blank');
     } else {
       this.mostrarToast('No hay currículum disponible', 'warning');
     }
   }
 
-  abrirEditar(usuario: any) {
-    // Clonar para no editar directamente la tabla
-    this.usuarioEditar = { ...usuario };
-  }
-
-  abrirEliminar(usuario: any) {
-    this.usuarioEliminar = usuario;
-  }
-
-  cerrarModal() {
-    this.usuarioEditar = null;
-    this.usuarioEliminar = null;
-  }
-
-  guardarEdicion() {
-    this.http.put(`http://localhost:3000/api/usuarios/${this.usuarioEditar.id_usuario}`, this.usuarioEditar)
-      .subscribe({
-        next: () => {
-          this.mostrarToast('Usuario actualizado correctamente');
-          this.cerrarModal();
-          if (this.tipoUsuario !== 'empresa') {
-            this.cargarUsuarios();
-          }
-        },
-        error: err => {
-          this.mostrarToast('Error al actualizar usuario', 'danger');
-        }
-      });
-  }
-
-  confirmarEliminar() {
-    this.http.delete(`http://localhost:3000/api/usuarios/${this.usuarioEliminar.id_usuario}`)
-      .subscribe({
-        next: () => {
-          this.mostrarToast('Usuario eliminado correctamente', 'danger');
-          this.cerrarModal();
-          if (this.tipoUsuario !== 'empresa') {
-            this.cargarUsuarios();
-          }
-        },
-        error: err => {
-          this.mostrarToast('Error al eliminar usuario', 'danger');
-        }
-      });
+  descargarArchivoAdjunto(postulacion: any) {
+    if (postulacion.archivo_adjunto) {
+      window.open(postulacion.archivo_adjunto, '_blank');
+    } else {
+      this.mostrarToast('No hay archivo adjunto disponible', 'warning');
+    }
   }
 
   irAlMenuPrincipal() {

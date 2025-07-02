@@ -38,4 +38,22 @@ export class PostulacionesService {
   obtenerPostulacionesOferta(ofertaId: number): Observable<Postulacion[]> {
     return this.http.get<Postulacion[]>(`${this.apiUrl}/postulaciones/obtener_postulaciones_oferta/${ofertaId}/`);
   }
+
+  obtenerPostulantesEmpresa(empresaId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/postulaciones/obtener_postulantes_empresa/${empresaId}/`);
+  }
+
+  // Buscar candidatos por habilidades
+  buscarCandidatos(habilidades: string, experiencia: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/buscar_candidatos/`, {
+      params: { habilidades, experiencia }
+    });
+  }
+
+  // Actualizar estado de postulación
+  actualizarEstadoPostulacion(postulacionId: number, estado: string): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/postulaciones/actualizar_estado_postulacion/${postulacionId}/`, {
+      estado: estado
+    });
+  }
 } 

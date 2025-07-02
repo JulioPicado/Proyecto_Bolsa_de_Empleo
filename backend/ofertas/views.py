@@ -84,7 +84,7 @@ def obtener_ofertas_empresa(request, empresa_id):
     Obtiene todas las ofertas de una empresa específica.
     """
     try:
-        empresa = Empresa.objects.get(id=empresa_id)
+        empresa = Empresa.objects.get(usuario_id=empresa_id)
     except Empresa.DoesNotExist:
         return Response({'error': 'Empresa no encontrada.'}, 
                       status=status.HTTP_404_NOT_FOUND)
@@ -127,7 +127,7 @@ def obtener_ofertas_empresa_con_filtros(request):
                       status=status.HTTP_400_BAD_REQUEST)
     
     try:
-        empresa = Empresa.objects.get(id=empresa_id)
+        empresa = Empresa.objects.get(usuario_id=empresa_id)
     except Empresa.DoesNotExist:
         return Response({'error': 'Empresa no encontrada.'}, 
                       status=status.HTTP_404_NOT_FOUND)

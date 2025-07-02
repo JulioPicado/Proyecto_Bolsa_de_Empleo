@@ -16,6 +16,8 @@ Including another URLconf
 # Para añadir en c:\Users\Zana\Documents\BOLSA DE EMPLEO\Proyecto_Bolsa_de_Empleo\backend\backend\urls.py
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -23,3 +25,7 @@ urlpatterns = [
     path('ofertas/', include('ofertas.urls')),
     path('postulaciones/', include('postulaciones.urls')),
 ]
+
+# Servir archivos media en desarrollo
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

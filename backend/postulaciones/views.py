@@ -133,29 +133,79 @@ def obtener_postulaciones_oferta(request, oferta_id):
 @api_view(['GET'])
 def obtener_postulantes_empresa(request, empresa_id):
     """
-    Devuelve los postulantes que han aplicado a ofertas de una empresa específica.
+    Devuelve todas las postulaciones a las ofertas de una empresa específica.
     """
-    # Obtener todas las ofertas de la empresa
-    ofertas = Oferta.objects.filter(empresa_id=empresa_id)
+    # Obtener todas las ofertas de la empresa usando usuario_id
+    ofertas = Oferta.objects.filter(empresa__usuario_id=empresa_id)
     # Obtener todas las postulaciones a esas ofertas
-    postulaciones = Postulacion.objects.filter(oferta__in=ofertas)
-    # Obtener los postulantes únicos
-    postulantes = Postulante.objects.filter(id__in=postulaciones.values_list('postulante_id', flat=True)).distinct()
+    postulaciones = Postulacion.objects.filter(oferta__in=ofertas).select_related('postulante__usuario', 'oferta')
     # Serializar los datos
-    candidatos_data = []
-    for postulante in postulantes:
-        candidatos_data.append({
-            'id': postulante.id,
-            'usuario_id': postulante.usuario.id,
-            'nombre': postulante.usuario.nombre,
-            'apellido': postulante.usuario.apellido,
-            'correo': postulante.usuario.correo,
-            'telefono': postulante.telefono,
-            'direccion': postulante.direccion,
-            'experiencia_laboral': postulante.experiencia_laboral,
-            'educacion': postulante.educacion,
-            'habilidades': postulante.habilidades,
-            'curriculum': postulante.curriculum.url if postulante.curriculum else None,
-            'fecha_registro': postulante.usuario.fecha_registro
+    postulaciones_data = []
+    for postulacion in postulaciones:
+        # Construir URL completa para archivo adjunto
+        archivo_adjunto_url = None
+        if postulacion.archivo_adjunto:
+            archivo_adjunto_url = request.build_absolute_uri(postulacion.archivo_adjunto.url)
+        
+        postulaciones_data.append({
+            'id': postulacion.id,
+            'oferta_id': postulacion.oferta.id,
+            'oferta_titulo': postulacion.oferta.titulo,
+            'postulante_id': postulacion.postulante.id,
+            'postulante_nombre': f"{postulacion.postulante.usuario.nombre} {postulacion.postulante.usuario.apellido}",
+            'postulante_correo': postulacion.postulante.usuario.correo,
+            'telefono': postulacion.postulante.telefono,
+            'direccion': postulacion.postulante.direccion,
+            'experiencia_laboral': postulacion.postulante.experiencia_laboral,
+            'educacion': postulacion.postulante.educacion,
+            'habilidades': postulacion.postulante.habilidades,
+            'curriculum': request.build_absolute_uri(postulacion.postulante.curriculum.url) if postulacion.postulante.curriculum else None,
+            'fecha_postulacion': postulacion.fecha_postulacion,
+            'estado': postulacion.estado,
+            'mensaje': postulacion.mensaje,
+            'archivo_adjunto': archivo_adjunto_url
         })
-    return Response({'candidatos': candidatos_data, 'total': len(candidatos_data)}, status=status.HTTP_200_OK)
+    return Response({'postulaciones': postulaciones_data, 'total': len(postulaciones_data)}, status=status.HTTP_200_OK)
+
+
+@api_view(['PUT'])
+def actualizar_estado_postulacion(request, postulacion_id):
+    """
+    Actualiza el estado de una postulación específica.
+    Requiere: estado (aceptada, rechazada, en_revision, entrevista)
+    """
+    try:
+        postulacion = Postulacion.objects.get(id=postulacion_id)
+    except Postulacion.DoesNotExist:
+        return Response({'error': 'Postulación no encontrada.'}, 
+                      status=status.HTTP_404_NOT_FOUND)
+    
+    # Validar que se envíe el estado
+    nuevo_estado = request.data.get('estado')
+    if not nuevo_estado:
+        return Response({'error': 'El campo estado es obligatorio.'}, 
+                      status=status.HTTP_400_BAD_REQUEST)
+    
+    # Validar que el estado sea válido
+    estados_validos = ['enviada', 'en_revision', 'entrevista', 'aceptada', 'rechazada']
+    if nuevo_estado not in estados_validos:
+        return Response({'error': f'Estado inválido. Estados válidos: {", ".join(estados_validos)}'}, 
+                      status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+        # Actualizar el estado
+        postulacion.estado = nuevo_estado
+        postulacion.save()
+        
+        return Response({
+            'id': postulacion.id,
+            'estado': postulacion.estado,
+            'mensaje': f'Estado actualizado a {nuevo_estado} correctamente.',
+            'postulante_nombre': f"{postulacion.postulante.usuario.nombre} {postulacion.postulante.usuario.apellido}",
+            'oferta_titulo': postulacion.oferta.titulo
+        }, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        return Response({'error': str(e)}, 
+                      status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
